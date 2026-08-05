@@ -32,6 +32,20 @@ test("Hermes bridge uses the isolated provider profile and returns structured ou
   assert.match(calls[0].args[1], /Ensemble VC/);
 });
 
+test("Hermes status uses a short health-check timeout", async () => {
+  const calls = [];
+  const bridge = createHermesBridge({
+    runCommand: async (command, args, options) => {
+      calls.push({ command, args, options });
+      return "Provider: OpenAI Codex logged in\nModel: gpt-5.6-sol";
+    },
+  });
+
+  await bridge.status();
+
+  assert.equal(calls[0].options.timeout, 8_000);
+});
+
 test("prompt construction caps context and result parsing tolerates markdown fences", () => {
   const prompt = buildHermesPrompt({
     prompt: "Create a plan",

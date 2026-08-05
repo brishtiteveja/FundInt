@@ -305,25 +305,26 @@ export function App() {
 
   useEffect(() => {
     const controller = new AbortController();
-    Promise.allSettled([fundingApi.session(controller.signal), fundingApi.agentStatus(controller.signal)]).then(([sessionResult, statusResult]) => {
+    fundingApi.session(controller.signal).then((session) => {
       if (controller.signal.aborted) return;
-      if (statusResult.status === "fulfilled") setAgentStatus(statusResult.value);
-      if (sessionResult.status === "fulfilled") {
-        if (sessionResult.value.authenticated) {
-          const remote = sessionResult.value;
-          setUser(remote.user);
-          setAgentMemories(remote.workspace.memories);
-          setAgentArtifacts(remote.workspace.artifacts);
-          setApplications(remote.workspace.applications);
-        } else if (shouldClearCachedWorkspace(sessionResult.value, user)) {
-          setUser(null);
-          setAgentMemories([]);
-          setAgentArtifacts([]);
-          setApplications([]);
-        }
+      if (session.authenticated) {
+        setUser(session.user);
+        setAgentMemories(session.workspace.memories);
+        setAgentArtifacts(session.workspace.artifacts);
+        setApplications(session.workspace.applications);
+      } else if (shouldClearCachedWorkspace(session, user)) {
+        setUser(null);
+        setAgentMemories([]);
+        setAgentArtifacts([]);
+        setApplications([]);
       }
+    }).catch(() => {}).finally(() => {
+      if (controller.signal.aborted) return;
       setBackendReady(true);
     });
+    fundingApi.agentStatus(controller.signal).then((status) => {
+      if (!controller.signal.aborted) setAgentStatus(status);
+    }).catch(() => {});
     return () => controller.abort();
   }, []);
 

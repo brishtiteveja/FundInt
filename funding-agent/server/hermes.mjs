@@ -64,10 +64,10 @@ export function parseHermesResult(output) {
   return { title: "Hermes funding analysis", body: text.slice(0, 4_000) || "Hermes returned an empty response.", bullets: [], type: "report" };
 }
 
-async function defaultRunCommand(command, args) {
+async function defaultRunCommand(command, args, { timeout = 120_000 } = {}) {
   const { stdout } = await execFileAsync(command, args, {
     cwd: process.cwd(),
-    timeout: 120_000,
+    timeout,
     maxBuffer: 2 * 1024 * 1024,
     env: process.env,
   });
@@ -78,7 +78,7 @@ export function createHermesBridge({ runCommand = defaultRunCommand, binary = pr
   return {
     async status() {
       try {
-        const output = await runCommand(binary, ["status"]);
+        const output = await runCommand(binary, ["status"], { timeout: 8_000 });
         const provider = output.match(/Provider:\s+([^\n]+)/)?.[1]?.trim() || "Configured provider";
         const model = output.match(/Model:\s+([^\n]+)/)?.[1]?.trim() || "Configured model";
         return { available: true, authenticated: /OpenAI Codex\s+.*logged in|Nous Portal\s+.*logged in/.test(output), provider, model, isolation: "safe-mode · todo tools only" };
