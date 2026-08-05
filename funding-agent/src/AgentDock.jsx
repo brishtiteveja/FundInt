@@ -1,25 +1,22 @@
-import { useState } from "react";
-import {
-  Brain,
-  CalendarBlank,
-  CaretDown,
-  CaretUp,
-  ChartBar,
-  CheckCircle,
-  FileText,
-  FloppyDisk,
-  Lightning,
-  ListChecks,
-  MagnifyingGlass,
-  PaperPlaneTilt,
-  PlugsConnected,
-  Sparkle,
-  TerminalWindow,
-  Trash,
-  UserCircle,
-  X,
-} from "@phosphor-icons/react";
-import { buildAgentResult } from "./agent-utils";
+import { useEffect, useState } from "react";
+import { Brain } from "@phosphor-icons/react/Brain";
+import { CalendarBlank } from "@phosphor-icons/react/CalendarBlank";
+import { CaretDown } from "@phosphor-icons/react/CaretDown";
+import { CaretUp } from "@phosphor-icons/react/CaretUp";
+import { ChartBar } from "@phosphor-icons/react/ChartBar";
+import { CheckCircle } from "@phosphor-icons/react/CheckCircle";
+import { FileText } from "@phosphor-icons/react/FileText";
+import { FloppyDisk } from "@phosphor-icons/react/FloppyDisk";
+import { Lightning } from "@phosphor-icons/react/Lightning";
+import { ListChecks } from "@phosphor-icons/react/ListChecks";
+import { MagnifyingGlass } from "@phosphor-icons/react/MagnifyingGlass";
+import { PaperPlaneTilt } from "@phosphor-icons/react/PaperPlaneTilt";
+import { PlugsConnected } from "@phosphor-icons/react/PlugsConnected";
+import { Sparkle } from "@phosphor-icons/react/Sparkle";
+import { TerminalWindow } from "@phosphor-icons/react/TerminalWindow";
+import { Trash } from "@phosphor-icons/react/Trash";
+import { UserCircle } from "@phosphor-icons/react/UserCircle";
+import { X } from "@phosphor-icons/react/X";
 import { usePersistentState } from "./use-persistent-state";
 
 const skillPrompts = [
@@ -47,7 +44,7 @@ function Modal({ title, eyebrow, onClose, children }) {
   );
 }
 
-export function AgentDock({ firms, user, setUser, artifacts, setArtifacts, memories, setMemories, onNotify, onOpenApplications }) {
+export function AgentDock({ firms, user, artifacts, setArtifacts, memories, setMemories, agentStatus, backendReady, onRequestLoginCode, onVerifyLoginCode, onLogout, onRunAgent, onNotify, onOpenApplications }) {
   const [open, setOpen] = useState(true);
   const [prompt, setPrompt] = useState("");
   const [mode, setMode] = useState("Analyze");
@@ -57,22 +54,50 @@ export function AgentDock({ firms, user, setUser, artifacts, setArtifacts, memor
   const [modal, setModal] = useState("");
   const [email, setEmail] = useState(user?.email || "");
   const [memoryDraft, setMemoryDraft] = useState("");
+  const [activeSkill, setActiveSkill] = useState("VC fit analyst");
+  const [authStep, setAuthStep] = useState("email");
+  const [loginCode, setLoginCode] = useState("");
+  const [devCode, setDevCode] = useState("");
+  const [authRunning, setAuthRunning] = useState(false);
+  const [authError, setAuthError] = useState("");
 
-  const runAgent = (event) => {
+  const hermesConnected = Boolean(agentStatus?.available && agentStatus?.authenticated);
+  const activeProvider = provider.id === "hermes" ? {
+    ...provider,
+    detail: backendReady ? (hermesConnected ? `${agentStatus.provider} connected` : "bridge unavailable") : "checking connection",
+    connected: hermesConnected,
+  } : provider;
+
+  useEffect(() => {
+    if (user?.email) setEmail(user.email);
+  }, [user]);
+
+  const runAgent = async (event) => {
     event?.preventDefault();
     const task = prompt.trim();
     if (!task || running) return;
+    if (!activeProvider.connected) {
+      onNotify(provider.id === "claude" ? "Claude is selected but its subscription bridge is not connected" : "Hermes is not authenticated or reachable");
+      return;
+    }
     const userMessage = { id: `user-${Date.now()}`, role: "user", body: task };
     setHistory((current) => [...current, userMessage]);
     setPrompt("");
     setRunning(true);
-
-    window.setTimeout(() => {
-      const result = buildAgentResult(firms, task, mode);
+    try {
+      const result = await onRunAgent({
+        prompt: task,
+        mode,
+        skill: activeSkill,
+        firms: firms.slice(0, 40).map(({ name, fit, stage, skills, check, deadline, access }) => ({ name, fit, stage, skills, check, deadline, access })),
+      });
       const assistantMessage = { ...result, id: `result-${Date.now()}`, role: "assistant", task, createdAt: new Date().toISOString() };
       setHistory((current) => [...current, assistantMessage]);
+    } catch (error) {
+      setHistory((current) => [...current, { id: `error-${Date.now()}`, role: "assistant", title: "Hermes bridge unavailable", body: error.message || "The agent could not complete this task.", sourceLabel: "Funding Agent backend" }]);
+    } finally {
       setRunning(false);
-    }, 520);
+    }
   };
 
   const saveArtifact = (message) => {
@@ -87,14 +112,44 @@ export function AgentDock({ firms, user, setUser, artifacts, setArtifacts, memor
   const chooseSkill = (skill) => {
     setPrompt(skill.prompt);
     setMode(skill.mode || "Analyze");
+    setActiveSkill(skill.label);
   };
 
-  const signIn = (event) => {
+  const requestLoginCode = async (event) => {
     event.preventDefault();
-    if (!email.includes("@")) return;
-    setUser({ email: email.trim(), signedInAt: new Date().toISOString() });
-    setModal("");
-    onNotify("Email workspace created on this device");
+    if (!email.includes("@") || authRunning) return;
+    setAuthRunning(true);
+    setAuthError("");
+    try {
+      const result = await onRequestLoginCode(email);
+      setEmail(result.email);
+      setDevCode(result.devCode || "");
+      setAuthStep("code");
+      onNotify(result.delivery === "email" ? "Sign-in code sent to your email" : "Local sign-in code created");
+    } catch (error) {
+      setAuthError(error.message);
+    } finally {
+      setAuthRunning(false);
+    }
+  };
+
+  const verifyLogin = async (event) => {
+    event.preventDefault();
+    if (loginCode.trim().length !== 6 || authRunning) return;
+    setAuthRunning(true);
+    setAuthError("");
+    try {
+      await onVerifyLoginCode(email, loginCode);
+      setModal("");
+      setAuthStep("email");
+      setLoginCode("");
+      setDevCode("");
+      onNotify("Private workspace connected to your email session");
+    } catch (error) {
+      setAuthError(error.message);
+    } finally {
+      setAuthRunning(false);
+    }
   };
 
   const addMemory = (event) => {
@@ -112,7 +167,7 @@ export function AgentDock({ firms, user, setUser, artifacts, setArtifacts, memor
     <section className={`agent-dock ${open ? "is-open" : "is-collapsed"}`} aria-label="Funding agent terminal">
       <header className="agent-dock-header">
         <div className="agent-identity"><TerminalWindow weight="duotone" /><strong>Funding Terminal</strong><span>persistent workspace</span></div>
-        <button className={`provider-chip ${provider.connected ? "connected" : "needs-setup"}`} onClick={() => setModal("provider")}><PlugsConnected /><span><strong>{provider.name}</strong>{provider.detail}</span><CaretDown /></button>
+        <button className={`provider-chip ${activeProvider.connected ? "connected" : "needs-setup"}`} onClick={() => setModal("provider")}><PlugsConnected /><span><strong>{activeProvider.name}</strong>{activeProvider.detail}</span><CaretDown /></button>
         <div className="agent-header-actions">
           <button onClick={() => setModal("memory")}><Brain /><span>Memory</span><b>{memories.length}</b></button>
           <button onClick={() => setModal("artifacts")}><FileText /><span>Reports & plans</span><b>{artifacts.length}</b></button>
@@ -132,17 +187,17 @@ export function AgentDock({ firms, user, setUser, artifacts, setArtifacts, memor
         <section className="agent-terminal-window">
           <div className="terminal-transcript" aria-live="polite">
             {visibleHistory.map((message) => <article key={message.id} className={`terminal-message ${message.role}`}>
-              <span>{message.role === "assistant" ? provider.name.toLowerCase() : "you"}</span>
+              <span>{message.role === "assistant" ? activeProvider.name.toLowerCase() : "you"}</span>
               <div><strong>{message.title}</strong><p>{message.body}</p>{message.bullets && <ul>{message.bullets.map((bullet) => <li key={bullet}>{bullet}</li>)}</ul>}
                 {message.type && <button onClick={() => saveArtifact(message)}><FloppyDisk /> Save {message.type}</button>}
               </div>
             </article>)}
-            {running && <article className="terminal-message assistant is-running"><span>{provider.name.toLowerCase()}</span><div><p><i /> Reading firms, deadlines, and saved context…</p></div></article>}
+            {running && <article className="terminal-message assistant is-running"><span>{activeProvider.name.toLowerCase()}</span><div><p><i /> Hermes is reading firms, deadlines, and your private context…</p></div></article>}
           </div>
           <form className="terminal-composer" onSubmit={runAgent}>
             <div className="agent-mode-toggle" role="group" aria-label="Agent task type">{["Analyze", "Search", "Plan"].map((item) => <button type="button" key={item} className={mode === item ? "active" : ""} onClick={() => setMode(item)}>{item}</button>)}</div>
             <label><span>&gt;</span><input aria-label="Ask Funding Agent" value={prompt} onChange={(event) => setPrompt(event.target.value)} placeholder="Ask to analyze investors, search deadlines, or create an application plan…" /></label>
-            <button className="agent-run" aria-label="Run agent task" disabled={!prompt.trim() || running}><PaperPlaneTilt weight="fill" /></button>
+            <button className="agent-run" aria-label="Run agent task" disabled={!prompt.trim() || running || !activeProvider.connected}><PaperPlaneTilt weight="fill" /></button>
           </form>
         </section>
 
@@ -154,12 +209,12 @@ export function AgentDock({ firms, user, setUser, artifacts, setArtifacts, memor
       </div>}
 
       {modal === "account" && <Modal title={user ? "Your workspace" : "Create your workspace"} eyebrow="Email authentication" onClose={() => setModal("")}>
-        {user ? <div className="account-state"><CheckCircle weight="fill" /><div><strong>{user.email}</strong><span>Reports, plans, applications, and memory persist on this device.</span></div><button onClick={() => { setUser(null); setModal(""); }}>Sign out</button></div> : <form className="account-form" onSubmit={signIn}><p>Start with email. Google sign-in and cross-device sync belong in the hosted backend.</p><label>Email address<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="founder@company.com" autoFocus /></label><button className="modal-primary" disabled={!email.includes("@")}>Continue with email</button><button type="button" className="modal-secondary" disabled>Continue with Google · next</button></form>}
+        {user ? <div className="account-state"><CheckCircle weight="fill" /><div><strong>{user.email}</strong><span>Memory, reports, plans, and applications are stored in your private server session.</span></div><button onClick={async () => { await onLogout(); setHistory(initialHistory); setModal(""); onNotify("Signed out and cleared the private workspace from this browser"); }}>Sign out</button></div> : authStep === "email" ? <form className="account-form" onSubmit={requestLoginCode}><p>Sign in without a password. Production can email the code through Resend; this local build reveals it for development.</p><label>Email address<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="founder@company.com" autoFocus /></label>{authError && <p className="auth-error">{authError}</p>}<button className="modal-primary" disabled={!email.includes("@") || authRunning}>{authRunning ? "Creating code…" : "Continue with email"}</button><button type="button" className="modal-secondary" disabled>Continue with Google · next</button></form> : <form className="account-form auth-code-form" onSubmit={verifyLogin}><p>Enter the six-digit code for <strong>{email}</strong>.</p>{devCode && <div className="development-code"><span>Local development code</span><strong>{devCode}</strong></div>}<label>Sign-in code<input inputMode="numeric" autoComplete="one-time-code" maxLength="6" value={loginCode} onChange={(event) => setLoginCode(event.target.value.replace(/\D/g, ""))} placeholder="000000" autoFocus /></label>{authError && <p className="auth-error">{authError}</p>}<button className="modal-primary" disabled={loginCode.length !== 6 || authRunning}>{authRunning ? "Verifying…" : "Verify and sign in"}</button><button type="button" className="modal-secondary" onClick={() => { setAuthStep("email"); setLoginCode(""); setAuthError(""); }}>Use another email</button></form>}
       </Modal>}
 
       {modal === "provider" && <Modal title="Agent connection" eyebrow="Model & skills" onClose={() => setModal("")}>
         <div className="provider-options">
-          <button className={provider.id === "hermes" ? "selected" : ""} onClick={() => { setProvider({ id: "hermes", name: "Hermes", detail: "local workspace ready", connected: true }); setModal(""); }}><span className="provider-icon hermes">H</span><span><strong>Hermes agent</strong><small>Current local workspace · persistent memory and terminal tools</small></span><CheckCircle weight="fill" /></button>
+          <button className={provider.id === "hermes" ? "selected" : ""} onClick={() => { setProvider({ id: "hermes", name: "Hermes", detail: "backend bridge", connected: hermesConnected }); setModal(""); }}><span className="provider-icon hermes">H</span><span><strong>Hermes agent</strong><small>{hermesConnected ? `${agentStatus.provider} · ${agentStatus.model} · isolated bridge` : "Installed bridge is not authenticated or reachable"}</small></span><CheckCircle weight="fill" /></button>
           <button className={provider.id === "claude" ? "selected" : ""} onClick={() => { setProvider({ id: "claude", name: "Claude", detail: "subscription bridge planned", connected: false }); setModal(""); onNotify("Claude selected · secure OAuth bridge still required"); }}><span className="provider-icon claude">C</span><span><strong>Claude subscription</strong><small>Claude Pro / Max through a Claude Code OAuth bridge</small></span><PlugsConnected /></button>
         </div>
         <p className="integration-note">Provider credentials are never collected in this interface. Production connection requires a secure local or server-side agent bridge.</p>

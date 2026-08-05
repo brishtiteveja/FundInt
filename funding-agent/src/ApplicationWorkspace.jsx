@@ -1,18 +1,16 @@
 import { useMemo, useState } from "react";
-import {
-  ArrowSquareOut,
-  CalendarBlank,
-  CaretLeft,
-  CaretRight,
-  CheckCircle,
-  Clock,
-  LinkSimple,
-  ListBullets,
-  Plus,
-  Trash,
-  WarningCircle,
-  X,
-} from "@phosphor-icons/react";
+import { ArrowSquareOut } from "@phosphor-icons/react/ArrowSquareOut";
+import { CalendarBlank } from "@phosphor-icons/react/CalendarBlank";
+import { CaretLeft } from "@phosphor-icons/react/CaretLeft";
+import { CaretRight } from "@phosphor-icons/react/CaretRight";
+import { CheckCircle } from "@phosphor-icons/react/CheckCircle";
+import { Clock } from "@phosphor-icons/react/Clock";
+import { LinkSimple } from "@phosphor-icons/react/LinkSimple";
+import { ListBullets } from "@phosphor-icons/react/ListBullets";
+import { Plus } from "@phosphor-icons/react/Plus";
+import { Trash } from "@phosphor-icons/react/Trash";
+import { WarningCircle } from "@phosphor-icons/react/WarningCircle";
+import { X } from "@phosphor-icons/react/X";
 import { getMonthCells } from "./agent-utils";
 
 const monthLabels = { "2026-08": "August 2026", "2026-09": "September 2026", "2026-10": "October 2026" };

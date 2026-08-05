@@ -1,48 +1,47 @@
 import { useEffect, useMemo, useState } from "react";
-import {
-  ArrowSquareOut,
-  Atom,
-  Bell,
-  BookmarkSimple,
-  Buildings,
-  CalendarBlank,
-  CalendarDots,
-  CardsThree,
-  CaretDown,
-  Check,
-  CheckCircle,
-  Circuitry,
-  Clock,
-  Database,
-  FileArrowDown,
-  Funnel,
-  Handshake,
-  LinkSimple,
-  MagnifyingGlass,
-  MapTrifold,
-  MapPin,
-  NotePencil,
-  Path,
-  Plus,
-  PushPin,
-  Robot,
-  Rows,
-  ShareNetwork,
-  ShieldChevron,
-  SlidersHorizontal,
-  Sparkle,
-  Target,
-  Table as TableIcon,
-  Ticket,
-  TrendUp,
-  UsersThree,
-  X,
-} from "@phosphor-icons/react";
+import { ArrowSquareOut } from "@phosphor-icons/react/ArrowSquareOut";
+import { Atom } from "@phosphor-icons/react/Atom";
+import { Bell } from "@phosphor-icons/react/Bell";
+import { BookmarkSimple } from "@phosphor-icons/react/BookmarkSimple";
+import { Buildings } from "@phosphor-icons/react/Buildings";
+import { CalendarBlank } from "@phosphor-icons/react/CalendarBlank";
+import { CalendarDots } from "@phosphor-icons/react/CalendarDots";
+import { CardsThree } from "@phosphor-icons/react/CardsThree";
+import { CaretDown } from "@phosphor-icons/react/CaretDown";
+import { Check } from "@phosphor-icons/react/Check";
+import { CheckCircle } from "@phosphor-icons/react/CheckCircle";
+import { Circuitry } from "@phosphor-icons/react/Circuitry";
+import { Clock } from "@phosphor-icons/react/Clock";
+import { Database } from "@phosphor-icons/react/Database";
+import { FileArrowDown } from "@phosphor-icons/react/FileArrowDown";
+import { Funnel } from "@phosphor-icons/react/Funnel";
+import { Handshake } from "@phosphor-icons/react/Handshake";
+import { LinkSimple } from "@phosphor-icons/react/LinkSimple";
+import { MagnifyingGlass } from "@phosphor-icons/react/MagnifyingGlass";
+import { MapPin } from "@phosphor-icons/react/MapPin";
+import { MapTrifold } from "@phosphor-icons/react/MapTrifold";
+import { NotePencil } from "@phosphor-icons/react/NotePencil";
+import { Path } from "@phosphor-icons/react/Path";
+import { Plus } from "@phosphor-icons/react/Plus";
+import { PushPin } from "@phosphor-icons/react/PushPin";
+import { Robot } from "@phosphor-icons/react/Robot";
+import { Rows } from "@phosphor-icons/react/Rows";
+import { ShareNetwork } from "@phosphor-icons/react/ShareNetwork";
+import { ShieldChevron } from "@phosphor-icons/react/ShieldChevron";
+import { SlidersHorizontal } from "@phosphor-icons/react/SlidersHorizontal";
+import { Sparkle } from "@phosphor-icons/react/Sparkle";
+import { Table as TableIcon } from "@phosphor-icons/react/Table";
+import { Target } from "@phosphor-icons/react/Target";
+import { Ticket } from "@phosphor-icons/react/Ticket";
+import { TrendUp } from "@phosphor-icons/react/TrendUp";
+import { UsersThree } from "@phosphor-icons/react/UsersThree";
+import { X } from "@phosphor-icons/react/X";
 import { Background, Handle, Position, ReactFlow } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { AgentDock } from "./AgentDock";
 import { ApplicationWorkspace } from "./ApplicationWorkspace";
 import { InvestorMap } from "./InvestorMap";
+import { fundingApi } from "./api";
 import eddyVcData from "./data/eddy-vcs.json";
 import { events } from "./data/events";
 import { createApplicationFromFirm, initialApplications } from "./agent-utils";
@@ -300,6 +299,64 @@ export function App() {
   const [applications, setApplications] = usePersistentState("funding-agent-applications", initialApplications);
   const [agentArtifacts, setAgentArtifacts] = usePersistentState("funding-agent-artifacts", []);
   const [agentMemories, setAgentMemories] = usePersistentState("funding-agent-memories", initialMemories);
+  const [backendReady, setBackendReady] = useState(false);
+  const [agentStatus, setAgentStatus] = useState({ available: false, authenticated: false, provider: "Hermes", model: null });
+
+  useEffect(() => {
+    const controller = new AbortController();
+    Promise.allSettled([fundingApi.session(controller.signal), fundingApi.agentStatus(controller.signal)]).then(([sessionResult, statusResult]) => {
+      if (controller.signal.aborted) return;
+      if (statusResult.status === "fulfilled") setAgentStatus(statusResult.value);
+      if (sessionResult.status === "fulfilled" && sessionResult.value.authenticated) {
+        const remote = sessionResult.value;
+        setUser(remote.user);
+        setAgentMemories(remote.workspace.memories);
+        setAgentArtifacts(remote.workspace.artifacts);
+        setApplications(remote.workspace.applications);
+      } else {
+        setUser(null);
+      }
+      setBackendReady(true);
+    });
+    return () => controller.abort();
+  }, []);
+
+  useEffect(() => {
+    if (!backendReady || !user) return undefined;
+    const timer = window.setTimeout(() => {
+      fundingApi.saveWorkspace({ memories: agentMemories, artifacts: agentArtifacts, applications }).catch(() => {
+        notify("Workspace saved on this device; server sync will retry after reconnecting");
+      });
+    }, 500);
+    return () => window.clearTimeout(timer);
+  }, [backendReady, user, agentMemories, agentArtifacts, applications]);
+
+  const verifyEmailLogin = async (email, code) => {
+    const result = await fundingApi.verifyLoginCode(email, code);
+    setUser(result.user);
+    if (result.isNewUser) {
+      await fundingApi.saveWorkspace({ memories: agentMemories, artifacts: agentArtifacts, applications });
+    } else {
+      setAgentMemories(result.workspace.memories);
+      setAgentArtifacts(result.workspace.artifacts);
+      setApplications(result.workspace.applications);
+    }
+    setBackendReady(true);
+    return result;
+  };
+
+  const logoutWorkspace = async () => {
+    await fundingApi.logout();
+    setUser(null);
+    setAgentMemories(initialMemories);
+    setAgentArtifacts([]);
+    setApplications(initialApplications);
+  };
+
+  const runHermesAgent = async (input) => {
+    const response = await fundingApi.runAgent(input);
+    return response.result;
+  };
 
   const notify = (message) => {
     setToast(message);
@@ -421,7 +478,7 @@ export function App() {
 
   return (
     <main className={`funding-app ${workspace === "events" ? "events-mode" : workspace === "applications" ? "applications-mode" : ""}`}>
-      <AgentDock firms={filteredFirms} user={user} setUser={setUser} artifacts={agentArtifacts} setArtifacts={setAgentArtifacts} memories={agentMemories} setMemories={setAgentMemories} onNotify={notify} onOpenApplications={() => switchWorkspace("applications")} />
+      <AgentDock firms={filteredFirms} user={user} artifacts={agentArtifacts} setArtifacts={setAgentArtifacts} memories={agentMemories} setMemories={setAgentMemories} agentStatus={agentStatus} backendReady={backendReady} onRequestLoginCode={fundingApi.requestLoginCode} onVerifyLoginCode={verifyEmailLogin} onLogout={logoutWorkspace} onRunAgent={runHermesAgent} onNotify={notify} onOpenApplications={() => switchWorkspace("applications")} />
       <header className="topbar">
         <div className="brand-lockup">
           <h1>Funding Agent</h1>

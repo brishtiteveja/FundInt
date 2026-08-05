@@ -1,7 +1,8 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import { fundingApiPlugin } from "./server/api.mjs";
 
-export default defineConfig({
+export default defineConfig(({ command, mode }) => ({
   build: {
     outDir: "dist/client",
   },
@@ -15,5 +16,7 @@ export default defineConfig({
       clientFiles: ["./src/main.jsx"],
     },
   },
-  plugins: [react()],
-});
+  plugins: command === "serve"
+    ? [fundingApiPlugin({ exposeDevCode: mode === "development" }), react()]
+    : [react()],
+}));

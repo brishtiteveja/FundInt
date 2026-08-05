@@ -16,5 +16,7 @@ When implementing from a selected generated mock, treat that image as the source
 - Investor discovery must support synchronized map, list/card, and table views over the same filters and source data.
 - Application tracking is a core workspace: saved applications, deadlines, timeline/calendar views, and a future Google Calendar connection point.
 - Authentication should start with email; Claude, Hermes, ChatGPT, and Google connections must be represented honestly and require real backend OAuth before production use.
+- Web-terminal tasks execute through the installed Hermes CLI in `--safe-mode` using OpenAI Codex and the non-destructive `todo` toolset only. Never expose terminal, file, browser, or code-execution toolsets through the web endpoint.
+- Email codes are hashed, sessions use HttpOnly SameSite cookies, and memories, reports, and applications are scoped by user in the server-side local store. Development may reveal a code; production must deliver it through the configured email provider.
 
 Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts/prepare-sites-build.mjs`, and `tests/sites-worker.test.mjs` intact so the same local prototype can be handed to Sites. Before a Sites handoff, run `npm run build` and `npm run test:sites`; the build must leave `dist/client/index.html`, `dist/server/index.js`, and `dist/.openai/hosting.json`.

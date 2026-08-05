@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { CircleMarker, MapContainer, Popup, TileLayer, useMap } from "react-leaflet";
-import { ArrowSquareOut, CheckCircle, MapPin } from "@phosphor-icons/react";
+import { ArrowSquareOut } from "@phosphor-icons/react/ArrowSquareOut";
+import { CheckCircle } from "@phosphor-icons/react/CheckCircle";
+import { MapPin } from "@phosphor-icons/react/MapPin";
 
 function FitInvestorBounds({ firms, city }) {
   const map = useMap();
