@@ -9,7 +9,7 @@ npm install
 npm run dev -- --port 4173
 ```
 
-The app detects the installed `hermes` CLI. Agent runs use its existing OpenAI Codex authentication in isolated `--safe-mode` with only the non-destructive `todo` toolset enabled.
+The app detects the installed `hermes` CLI. Signed-in agent runs use its existing OpenAI Codex authentication in isolated `--safe-mode` with only the non-destructive `todo` toolset enabled. The bridge accepts one task per user at a time and rate-limits repeat runs.
 
 ## Email sessions
 

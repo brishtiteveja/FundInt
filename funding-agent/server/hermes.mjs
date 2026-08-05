@@ -3,7 +3,7 @@ import { promisify } from "node:util";
 
 const execFileAsync = promisify(execFile);
 const MAX_PROMPT_LENGTH = 4_000;
-const MAX_FIRMS = 40;
+const MAX_FIRMS = 150;
 const MAX_MEMORIES = 12;
 
 function compactFirm(firm) {
@@ -89,15 +89,19 @@ export function createHermesBridge({ runCommand = defaultRunCommand, binary = pr
 
     async run(input) {
       const fullPrompt = buildHermesPrompt(input);
-      const output = await runCommand(binary, [
-        "-z", fullPrompt,
-        "--safe-mode",
-        "--provider", "openai-codex",
-        "-m", "gpt-5.6-sol",
-        "-t", "todo",
-        "--reasoning", input.mode === "Plan" ? "medium" : "low",
-      ]);
-      return { ...parseHermesResult(output), sourceLabel: "Hermes · OpenAI Codex · isolated bridge" };
+      try {
+        const output = await runCommand(binary, [
+          "-z", fullPrompt,
+          "--safe-mode",
+          "--provider", "openai-codex",
+          "-m", "gpt-5.6-sol",
+          "-t", "todo",
+          "--reasoning", input.mode === "Plan" ? "medium" : "low",
+        ]);
+        return { ...parseHermesResult(output), sourceLabel: "Hermes · OpenAI Codex · isolated bridge" };
+      } catch {
+        throw new Error("Hermes could not complete this task. Check the local bridge and try again.");
+      }
     },
   };
 }

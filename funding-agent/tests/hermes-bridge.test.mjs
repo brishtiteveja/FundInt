@@ -37,12 +37,26 @@ test("prompt construction caps context and result parsing tolerates markdown fen
     prompt: "Create a plan",
     mode: "Plan",
     skill: "Application planner",
-    firms: Array.from({ length: 80 }, (_, index) => ({ name: `Firm ${index}`, fit: 80 - index })),
+    firms: Array.from({ length: 200 }, (_, index) => ({ name: `Firm ${index}`, fit: 200 - index })),
     memories: Array.from({ length: 30 }, (_, index) => ({ content: `Memory ${index}` })),
   });
-  assert.doesNotMatch(prompt, /Firm 79/);
+  assert.match(prompt, /Firm 149/);
+  assert.doesNotMatch(prompt, /Firm 199/);
   assert.doesNotMatch(prompt, /Memory 29/);
 
   const parsed = parseHermesResult("```json\n{\"title\":\"Plan\",\"summary\":\"Apply now\",\"bullets\":[\"One\"],\"type\":\"plan\"}\n```");
   assert.deepEqual(parsed, { title: "Plan", body: "Apply now", bullets: ["One"], type: "plan" });
+});
+
+test("Hermes failures expose a fixed error without echoing private prompt arguments", async () => {
+  const bridge = createHermesBridge({
+    runCommand: async (_command, args) => {
+      throw new Error(`failed command ${args.join(" ")}`);
+    },
+  });
+
+  await assert.rejects(
+    bridge.run({ prompt: "Private founder fact", memories: [{ content: "Secret memory" }] }),
+    (error) => error.message === "Hermes could not complete this task. Check the local bridge and try again." && !error.message.includes("Secret memory"),
+  );
 });

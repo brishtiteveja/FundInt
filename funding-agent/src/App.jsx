@@ -46,6 +46,7 @@ import eddyVcData from "./data/eddy-vcs.json";
 import { events } from "./data/events";
 import { createApplicationFromFirm, initialApplications } from "./agent-utils";
 import { getPaginationItems, matchesCheckFilter } from "./funding-utils";
+import { shouldClearCachedWorkspace } from "./session-utils";
 import { usePersistentState } from "./use-persistent-state";
 
 const curatedFirms = [
@@ -307,14 +308,19 @@ export function App() {
     Promise.allSettled([fundingApi.session(controller.signal), fundingApi.agentStatus(controller.signal)]).then(([sessionResult, statusResult]) => {
       if (controller.signal.aborted) return;
       if (statusResult.status === "fulfilled") setAgentStatus(statusResult.value);
-      if (sessionResult.status === "fulfilled" && sessionResult.value.authenticated) {
-        const remote = sessionResult.value;
-        setUser(remote.user);
-        setAgentMemories(remote.workspace.memories);
-        setAgentArtifacts(remote.workspace.artifacts);
-        setApplications(remote.workspace.applications);
-      } else {
-        setUser(null);
+      if (sessionResult.status === "fulfilled") {
+        if (sessionResult.value.authenticated) {
+          const remote = sessionResult.value;
+          setUser(remote.user);
+          setAgentMemories(remote.workspace.memories);
+          setAgentArtifacts(remote.workspace.artifacts);
+          setApplications(remote.workspace.applications);
+        } else if (shouldClearCachedWorkspace(sessionResult.value, user)) {
+          setUser(null);
+          setAgentMemories([]);
+          setAgentArtifacts([]);
+          setApplications([]);
+        }
       }
       setBackendReady(true);
     });
@@ -335,7 +341,14 @@ export function App() {
     const result = await fundingApi.verifyLoginCode(email, code);
     setUser(result.user);
     if (result.isNewUser) {
-      await fundingApi.saveWorkspace({ memories: agentMemories, artifacts: agentArtifacts, applications });
+      const importLocal = window.confirm("Import the memories, reports, and applications currently saved on this device into this new account?");
+      if (importLocal) {
+        await fundingApi.saveWorkspace({ memories: agentMemories, artifacts: agentArtifacts, applications });
+      } else {
+        setAgentMemories([]);
+        setAgentArtifacts([]);
+        setApplications([]);
+      }
     } else {
       setAgentMemories(result.workspace.memories);
       setAgentArtifacts(result.workspace.artifacts);
@@ -348,9 +361,9 @@ export function App() {
   const logoutWorkspace = async () => {
     await fundingApi.logout();
     setUser(null);
-    setAgentMemories(initialMemories);
+    setAgentMemories([]);
     setAgentArtifacts([]);
-    setApplications(initialApplications);
+    setApplications([]);
   };
 
   const runHermesAgent = async (input) => {

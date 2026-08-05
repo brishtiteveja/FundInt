@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Brain } from "@phosphor-icons/react/Brain";
 import { CalendarBlank } from "@phosphor-icons/react/CalendarBlank";
 import { CaretDown } from "@phosphor-icons/react/CaretDown";
@@ -21,7 +21,7 @@ import { usePersistentState } from "./use-persistent-state";
 
 const skillPrompts = [
   { id: "fit", label: "VC fit analyst", icon: ChartBar, prompt: "Analyze the strongest seed investors for an AI infrastructure company" },
-  { id: "deadline", label: "Deadline scout", icon: MagnifyingGlass, prompt: "Search the workspace for open or confirmed application deadlines" },
+  { id: "deadline", label: "Deadline scout", icon: MagnifyingGlass, prompt: "Search the workspace for open or confirmed application deadlines", mode: "Search workspace" },
   { id: "plan", label: "Application planner", icon: ListChecks, prompt: "Build a prioritized application plan for the next 30 days", mode: "Plan" },
   { id: "deck", label: "Deck critic", icon: Sparkle, prompt: "Create a deck review checklist tailored to my highest-fit investors", mode: "Plan" },
 ];
@@ -60,6 +60,7 @@ export function AgentDock({ firms, user, artifacts, setArtifacts, memories, setM
   const [devCode, setDevCode] = useState("");
   const [authRunning, setAuthRunning] = useState(false);
   const [authError, setAuthError] = useState("");
+  const previousUserId = useRef(user?.id || null);
 
   const hermesConnected = Boolean(agentStatus?.available && agentStatus?.authenticated);
   const activeProvider = provider.id === "hermes" ? {
@@ -72,10 +73,21 @@ export function AgentDock({ firms, user, artifacts, setArtifacts, memories, setM
     if (user?.email) setEmail(user.email);
   }, [user]);
 
+  useEffect(() => {
+    const nextUserId = user?.id || null;
+    if (previousUserId.current !== nextUserId) setHistory(initialHistory);
+    previousUserId.current = nextUserId;
+  }, [user?.id, setHistory]);
+
   const runAgent = async (event) => {
     event?.preventDefault();
     const task = prompt.trim();
     if (!task || running) return;
+    if (!user) {
+      setModal("account");
+      onNotify("Sign in with email before using the connected Hermes subscription");
+      return;
+    }
     if (!activeProvider.connected) {
       onNotify(provider.id === "claude" ? "Claude is selected but its subscription bridge is not connected" : "Hermes is not authenticated or reachable");
       return;
@@ -89,7 +101,7 @@ export function AgentDock({ firms, user, artifacts, setArtifacts, memories, setM
         prompt: task,
         mode,
         skill: activeSkill,
-        firms: firms.slice(0, 40).map(({ name, fit, stage, skills, check, deadline, access }) => ({ name, fit, stage, skills, check, deadline, access })),
+        firms: firms.map(({ name, fit, stage, skills, check, deadline, access }) => ({ name, fit, stage, skills, check, deadline, access })),
       });
       const assistantMessage = { ...result, id: `result-${Date.now()}`, role: "assistant", task, createdAt: new Date().toISOString() };
       setHistory((current) => [...current, assistantMessage]);
@@ -179,9 +191,9 @@ export function AgentDock({ firms, user, artifacts, setArtifacts, memories, setM
 
       {open && <div className="agent-dock-body">
         <aside className="agent-skills">
-          <span className="agent-section-label">Claude-compatible skills</span>
+          <span className="agent-section-label">Reusable skill templates</span>
           <div>{skillPrompts.map((skill) => { const Icon = skill.icon; return <button key={skill.id} onClick={() => chooseSkill(skill)}><Icon /><span>{skill.label}</span></button>; })}</div>
-          <small>Skills prepare repeatable workflows; Hermes memory keeps facts across sessions.</small>
+          <small>Templates prepare repeatable prompts today; a versioned Claude/Hermes skill runner is the next integration.</small>
         </aside>
 
         <section className="agent-terminal-window">
@@ -195,8 +207,8 @@ export function AgentDock({ firms, user, artifacts, setArtifacts, memories, setM
             {running && <article className="terminal-message assistant is-running"><span>{activeProvider.name.toLowerCase()}</span><div><p><i /> Hermes is reading firms, deadlines, and your private context…</p></div></article>}
           </div>
           <form className="terminal-composer" onSubmit={runAgent}>
-            <div className="agent-mode-toggle" role="group" aria-label="Agent task type">{["Analyze", "Search", "Plan"].map((item) => <button type="button" key={item} className={mode === item ? "active" : ""} onClick={() => setMode(item)}>{item}</button>)}</div>
-            <label><span>&gt;</span><input aria-label="Ask Funding Agent" value={prompt} onChange={(event) => setPrompt(event.target.value)} placeholder="Ask to analyze investors, search deadlines, or create an application plan…" /></label>
+            <div className="agent-mode-toggle" role="group" aria-label="Agent task type">{["Analyze", "Search workspace", "Plan"].map((item) => <button type="button" key={item} className={mode === item ? "active" : ""} onClick={() => setMode(item)}>{item}</button>)}</div>
+            <label><span>&gt;</span><input aria-label="Ask Funding Agent" value={prompt} onChange={(event) => setPrompt(event.target.value)} placeholder="Ask to analyze investors, search workspace deadlines, or create an application plan…" /></label>
             <button className="agent-run" aria-label="Run agent task" disabled={!prompt.trim() || running || !activeProvider.connected}><PaperPlaneTilt weight="fill" /></button>
           </form>
         </section>

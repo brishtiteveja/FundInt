@@ -13,8 +13,19 @@ import { WarningCircle } from "@phosphor-icons/react/WarningCircle";
 import { X } from "@phosphor-icons/react/X";
 import { getMonthCells } from "./agent-utils";
 
-const monthLabels = { "2026-08": "August 2026", "2026-09": "September 2026", "2026-10": "October 2026" };
-const monthKeys = Object.keys(monthLabels);
+function monthLabel(monthKey) {
+  const [year, month] = monthKey.split("-").map(Number);
+  return new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(Date.UTC(year, month - 1, 1)));
+}
+
+function shiftMonth(monthKey, offset) {
+  const [year, month] = monthKey.split("-").map(Number);
+  return new Date(Date.UTC(year, month - 1 + offset, 1)).toISOString().slice(0, 7);
+}
+
+function initialCalendarMonth(applications) {
+  return applications.filter((application) => application.date).map((application) => application.date.slice(0, 7)).sort()[0] || new Date().toISOString().slice(0, 7);
+}
 
 function prettyDate(date) {
   if (!date) return "Date not recorded";
@@ -51,7 +62,7 @@ function AddApplicationModal({ onClose, onAdd }) {
 }
 
 export function ApplicationWorkspace({ applications, setApplications, view, setView, statusFilter, query = "", onNotify }) {
-  const [month, setMonth] = useState("2026-09");
+  const [month, setMonth] = useState(() => initialCalendarMonth(applications));
   const [showAdd, setShowAdd] = useState(false);
   const filtered = useMemo(() => applications.filter((application) => {
     const matchesStatus = statusFilter === "All statuses" || application.status === statusFilter;
@@ -61,7 +72,6 @@ export function ApplicationWorkspace({ applications, setApplications, view, setV
   const dated = useMemo(() => filtered.filter((application) => application.date).sort((a, b) => a.date.localeCompare(b.date)), [filtered]);
   const undated = filtered.filter((application) => !application.date);
   const cells = getMonthCells(month);
-  const monthIndex = monthKeys.indexOf(month);
 
   const remove = (id) => setApplications((current) => current.filter((application) => application.id !== id));
   const add = (application) => {
@@ -86,7 +96,7 @@ export function ApplicationWorkspace({ applications, setApplications, view, setV
       <section className="timeline-feed"><header><h3>Upcoming and saved</h3><span>Sorted by verified date</span></header>{dated.map((application, index) => <article className={`timeline-item status-${application.status.toLowerCase().replaceAll(" ", "-")}`} key={application.id}><div className="timeline-axis"><i />{index < dated.length - 1 && <span />}</div><div className="timeline-date"><strong>{prettyDate(application.date)}</strong><small>{application.provenance}</small></div><div className="timeline-card"><header><div><strong>{application.organization}</strong><span>{application.milestone}</span></div><b>{application.status}</b></header><footer><span><CheckCircle weight="fill" /> {application.source}</span><a href={googleCalendarUrl(application)} target="_blank" rel="noreferrer">Google Calendar <ArrowSquareOut /></a><button aria-label={`Remove ${application.organization}`} onClick={() => remove(application.id)}><Trash /></button></footer></div></article>)}</section>
       <aside className="undated-applications"><header><WarningCircle /><div><h3>Undated applications</h3><p>Applied or saved, but no date was invented.</p></div></header>{undated.map((application) => <article key={application.id}><span className={`application-status status-${application.status.toLowerCase()}`}>{application.status}</span><strong>{application.organization}</strong><p>{application.milestone}</p><small>{application.provenance}</small><button aria-label={`Remove ${application.organization}`} onClick={() => remove(application.id)}><Trash /></button></article>)}</aside>
     </div> : <div className="calendar-layout">
-      <section className="month-calendar"><header><button aria-label="Previous month" disabled={monthIndex === 0} onClick={() => setMonth(monthKeys[monthIndex - 1])}><CaretLeft /></button><div><span>Application calendar</span><h3>{monthLabels[month]}</h3></div><button aria-label="Next month" disabled={monthIndex === monthKeys.length - 1} onClick={() => setMonth(monthKeys[monthIndex + 1])}><CaretRight /></button></header><div className="calendar-weekdays">{["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => <span key={day}>{day}</span>)}</div><div className="calendar-grid">{cells.map((cell) => { const items = dated.filter((application) => application.date === cell.date); return <article key={cell.date} className={`${cell.inMonth ? "" : "outside"} ${items.length ? "has-items" : ""}`}><span>{cell.day}</span>{items.map((application) => <button key={application.id} title={`${application.organization}: ${application.milestone}`} onClick={() => onNotify(`${application.organization} · ${application.milestone}`)}><i className={`status-${application.status.toLowerCase().replaceAll(" ", "-")}`} />{application.organization}</button>)}</article>; })}</div></section>
+      <section className="month-calendar"><header><button aria-label="Previous month" onClick={() => setMonth((current) => shiftMonth(current, -1))}><CaretLeft /></button><div><span>Application calendar</span><h3>{monthLabel(month)}</h3></div><button aria-label="Next month" onClick={() => setMonth((current) => shiftMonth(current, 1))}><CaretRight /></button></header><div className="calendar-weekdays">{["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => <span key={day}>{day}</span>)}</div><div className="calendar-grid">{cells.map((cell) => { const items = dated.filter((application) => application.date === cell.date); return <article key={cell.date} className={`${cell.inMonth ? "" : "outside"} ${items.length ? "has-items" : ""}`}><span>{cell.day}</span>{items.map((application) => <button key={application.id} title={`${application.organization}: ${application.milestone}`} onClick={() => onNotify(`${application.organization} · ${application.milestone}`)}><i className={`status-${application.status.toLowerCase().replaceAll(" ", "-")}`} />{application.organization}</button>)}</article>; })}</div></section>
       <aside className="calendar-agenda"><header><Clock /><div><h3>Month agenda</h3><p>{dated.filter((item) => item.date.startsWith(month)).length} dated milestones</p></div></header>{dated.filter((item) => item.date.startsWith(month)).map((application) => <article key={application.id}><time>{prettyDate(application.date)}</time><strong>{application.organization}</strong><span>{application.milestone}</span><small>{application.provenance}</small><a href={googleCalendarUrl(application)} target="_blank" rel="noreferrer">Add to Google Calendar <ArrowSquareOut /></a></article>)}</aside>
     </div>}
     {showAdd && <AddApplicationModal onClose={() => setShowAdd(false)} onAdd={add} />}

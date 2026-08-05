@@ -67,13 +67,14 @@ function compactAgentInput(body) {
     prompt: body.prompt,
     mode: body.mode,
     skill: body.skill,
-    firms: Array.isArray(body.firms) ? body.firms.slice(0, 40) : [],
+    firms: Array.isArray(body.firms) ? body.firms.slice(0, 150) : [],
   };
 }
 
 export function createFundingApi({
   dataDirectory = process.env.FUNDING_DATA_DIR || resolve(process.cwd(), ".funding-agent"),
   exposeDevCode = process.env.NODE_ENV !== "production",
+  secureCookies = process.env.NODE_ENV === "production",
   store,
   bridge = createHermesBridge(),
   deliverCode = sendEmailCode,
@@ -84,6 +85,8 @@ export function createFundingApi({
   });
   let cachedStatus = null;
   let statusCheckedAt = 0;
+  const activeAgentRuns = new Set();
+  const lastAgentRunAt = new Map();
 
   return async function fundingApi(req, res, next) {
     const url = new URL(req.url, "http://funding.local");
@@ -126,12 +129,12 @@ export function createFundingApi({
           user: verified.user,
           isNewUser: verified.isNewUser,
           workspace: workspaceStore.getWorkspace(verified.user.id),
-        }, { "Set-Cookie": `${SESSION_COOKIE}=${encodeURIComponent(verified.token)}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${maxAge}` });
+        }, { "Set-Cookie": `${SESSION_COOKIE}=${encodeURIComponent(verified.token)}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${maxAge}${secureCookies ? "; Secure" : ""}` });
       }
 
       if (req.method === "POST" && url.pathname === "/api/auth/logout") {
         workspaceStore.logout(token);
-        return sendJson(res, 200, { ok: true }, { "Set-Cookie": `${SESSION_COOKIE}=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0` });
+        return sendJson(res, 200, { ok: true }, { "Set-Cookie": `${SESSION_COOKIE}=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0${secureCookies ? "; Secure" : ""}` });
       }
 
       if (req.method === "PUT" && url.pathname === "/api/workspace") {
@@ -142,10 +145,21 @@ export function createFundingApi({
       }
 
       if (req.method === "POST" && url.pathname === "/api/agent/run") {
+        if (!session) return sendJson(res, 401, { error: "Sign in before running the connected Hermes agent" });
+        const userId = session.user.id;
+        const previousRun = lastAgentRunAt.get(userId) || 0;
+        if (activeAgentRuns.has(userId)) return sendJson(res, 429, { error: "An agent task is already running for this workspace" });
+        if (Date.now() - previousRun < 5_000) return sendJson(res, 429, { error: "Please wait before running another agent task" });
         const body = await readJson(req);
-        const memories = session ? workspaceStore.getWorkspace(session.user.id).memories : [];
-        const result = await bridge.run({ ...compactAgentInput(body), memories });
-        return sendJson(res, 200, { result });
+        const memories = workspaceStore.getWorkspace(userId).memories;
+        activeAgentRuns.add(userId);
+        lastAgentRunAt.set(userId, Date.now());
+        try {
+          const result = await bridge.run({ ...compactAgentInput(body), memories });
+          return sendJson(res, 200, { result });
+        } finally {
+          activeAgentRuns.delete(userId);
+        }
       }
 
       return sendJson(res, 404, { error: "API route not found" });

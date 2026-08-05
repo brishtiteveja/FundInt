@@ -64,3 +64,41 @@ test("API verifies email, issues an HttpOnly session, syncs workspace, and scope
   assert.equal(agentResponse.body.result.title, "Scoped result");
   assert.deepEqual(bridgeCalls[0].memories, workspace.memories);
 });
+
+test("production sessions use Secure cookies", async (t) => {
+  const directory = await mkdtemp(join(tmpdir(), "funding-agent-api-secure-"));
+  t.after(async () => rm(directory, { recursive: true, force: true }));
+  const store = createWorkspaceStore({
+    dbPath: join(directory, "workspace.json"),
+    secret: "api-test-secret",
+    codeGenerator: () => "445566",
+    minCodeIntervalMs: 0,
+  });
+  const api = createFundingApi({
+    store,
+    secureCookies: true,
+    exposeDevCode: true,
+    bridge: { status: async () => ({}), run: async () => ({}) },
+    deliverCode: async () => ({ delivery: "local" }),
+  });
+
+  await requestJson(api, "/api/auth/request", { method: "POST", body: { email: "secure@example.com" } });
+  const response = await requestJson(api, "/api/auth/verify", { method: "POST", body: { email: "secure@example.com", code: "445566" } });
+
+  assert.match(response.headers["set-cookie"], /; Secure$/);
+});
+
+test("agent execution requires a session", async (t) => {
+  const directory = await mkdtemp(join(tmpdir(), "funding-agent-api-guest-"));
+  t.after(async () => rm(directory, { recursive: true, force: true }));
+  let runs = 0;
+  const api = createFundingApi({
+    dataDirectory: directory,
+    bridge: { status: async () => ({}), run: async () => { runs += 1; return {}; } },
+  });
+
+  const response = await requestJson(api, "/api/agent/run", { method: "POST", body: { prompt: "Use the operator subscription" } });
+
+  assert.equal(response.status, 401);
+  assert.equal(runs, 0);
+});
