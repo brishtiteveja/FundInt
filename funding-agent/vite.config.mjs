@@ -17,6 +17,6 @@ export default defineConfig(({ command, mode }) => ({
     },
   },
   plugins: command === "serve"
-    ? [fundingApiPlugin({ exposeDevCode: mode === "development" }), react()]
+    ? [fundingApiPlugin({ exposeDevCode: mode === "development" || process.env.npm_lifecycle_event === "preview" }), react()]
     : [react()],
 }));
