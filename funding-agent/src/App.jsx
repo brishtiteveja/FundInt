@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowSquareOut } from "@phosphor-icons/react/ArrowSquareOut";
 import { Atom } from "@phosphor-icons/react/Atom";
 import { Bell } from "@phosphor-icons/react/Bell";
+import { Binoculars } from "@phosphor-icons/react/Binoculars";
 import { BookmarkSimple } from "@phosphor-icons/react/BookmarkSimple";
 import { Buildings } from "@phosphor-icons/react/Buildings";
 import { CalendarBlank } from "@phosphor-icons/react/CalendarBlank";
@@ -45,6 +46,7 @@ import { fundingApi } from "./api";
 import eddyVcData from "./data/eddy-vcs.json";
 import { events } from "./data/events";
 import { createApplicationFromFirm, initialApplications } from "./agent-utils";
+import { APPLICATION_TRACKING_STATUSES, upsertEventApplication } from "./funding-calendar-utils";
 import { getPaginationItems, matchesCheckFilter } from "./funding-utils";
 import { shouldClearCachedWorkspace } from "./session-utils";
 import { usePersistentState } from "./use-persistent-state";
@@ -145,8 +147,17 @@ const focusOptions = ["All focus", "AI/ML", "Infrastructure", "B2B SaaS", "Defen
 const stageOptions = ["All stages", "Pre-Seed", "Seed", "Series A", "Series B", "Series C+"];
 const checkOptions = ["Any check size", "Under $250K", "$250K – $1M", "$1M – $5M", "$5M+", "Not listed"];
 const evidenceOptions = ["All time", "Past 12 months", "Past 3 years", "Since 2018"];
+const investorStatusOptions = ["All statuses", "Open", "Active", "Closing", "Verify", "Review"];
+const investorAccessOptions = ["All access", "Warm", "Apply", "Intro"];
+const investorSortOptions = ["Best fit", "Deadline first", "Firm A–Z"];
+const moreSkillOptions = ["Fintech", "Healthtech", "Consumer"];
+const defaultInvestorViews = [
+  { id: "austin-ai", label: "Austin AI/ML", city: "Austin", focus: "AI/ML", stage: "All stages", status: "All statuses", access: "All access" },
+  { id: "austin-ready", label: "Austin ready to apply", city: "Austin", focus: "All focus", stage: "All stages", status: "Open", access: "Apply" },
+  { id: "sf-seed", label: "SF seed investors", city: "San Francisco", focus: "All focus", stage: "Seed", status: "All statuses", access: "All access" },
+];
 const eventDateOptions = ["All dates", "Aug – Sep 2026", "Oct – Dec 2026", "2027"];
-const applicationStatusOptions = ["All statuses", "Applied", "Saved", "Due soon", "Meeting", "Passed"];
+const applicationStatusOptions = ["All statuses", ...APPLICATION_TRACKING_STATUSES];
 const initialMemories = [
   { id: "memory-target", content: "Primary fundraising geographies: Austin and San Francisco.", createdAt: "2026-08-04T00:00:00.000Z" },
   { id: "memory-applied", content: "Already applied to Y Combinator, Antler, and Startup World Cup.", createdAt: "2026-08-04T00:00:00.000Z" },
@@ -213,11 +224,12 @@ function GraphNode({ data }) {
   const Icon = data.icon;
   const isDeal = data.kind === "deal";
   const isFirm = data.kind === "firm";
+  const isSkill = data.kind === "skill";
   return (
     <button data-firm={data.initials || ""} className={`graph-node graph-node-${data.kind} ${data.active ? "is-active" : ""}`} onClick={data.onSelect} aria-label={`${data.title} graph node`}>
       <Handle type="target" position={Position.Top} className="hidden-handle" />
-      <span className="graph-node-orb">{Icon ? <Icon weight="duotone" /> : <span>{data.initials}</span>}</span>
-      <span className="graph-node-title">{data.title}</span>
+      <span className="graph-node-orb">{Icon ? <Icon weight="duotone" /> : <span>{isSkill ? data.title : data.initials}</span>}</span>
+      {!isSkill && <span className="graph-node-title">{data.title}</span>}
       {data.meta && <span className="graph-node-meta">{data.meta}</span>}
       {isDeal && <span className="verified-dot"><Check weight="bold" /></span>}
       {isFirm && data.active && <span className="node-selected"><Check weight="bold" /></span>}
@@ -245,7 +257,7 @@ function ActionButton({ icon: Icon, children, onClick, primary = false, disabled
   return <button className={`action-button ${primary ? "primary" : ""}`} onClick={onClick} disabled={disabled}>{Icon && <Icon />}<span>{children}</span></button>;
 }
 
-function EventCard({ event, onNotify }) {
+function EventCard({ event, onNotify, onSaveEvent }) {
   const isDeadline = Boolean(event.applicationDeadline);
   return (
     <article className={`event-card ${event.alreadyApplied ? "already-applied" : ""}`}>
@@ -267,14 +279,15 @@ function EventCard({ event, onNotify }) {
         {event.alreadyApplied
           ? <button className="event-primary" onClick={() => onNotify(`${event.title} selection tracking added`)}><Bell /> Track result</button>
           : <a className="event-primary" href={event.registrationUrl} target="_blank" rel="noreferrer"><Ticket /> {event.action}</a>}
-        <button className="event-calendar" aria-label={`Add ${event.title} to calendar`} onClick={() => onNotify(`${event.title} added to your Funding calendar`)}><CalendarBlank /></button>
+        <button className="event-calendar-action" onClick={() => onSaveEvent(event, false)}><CalendarBlank /> Calendar</button>
+        <button className="event-reminder-action" onClick={() => onSaveEvent(event, true)}><Bell /> Remind</button>
       </footer>
     </article>
   );
 }
 
 export function App() {
-  const [workspace, setWorkspace] = useState("investors");
+  const [workspace, setWorkspace] = useState("applications");
   const [investorView, setInvestorView] = useState("table");
   const [query, setQuery] = useState("");
   const [city, setCity] = useState("Austin");
@@ -283,10 +296,18 @@ export function App() {
   const [stageFilter, setStageFilter] = useState("All stages");
   const [checkFilter, setCheckFilter] = useState("Any check size");
   const [evidenceWindow, setEvidenceWindow] = useState("Since 2018");
+  const [investorStatusFilter, setInvestorStatusFilter] = useState("All statuses");
+  const [investorAccessFilter, setInvestorAccessFilter] = useState("All access");
+  const [investorSort, setInvestorSort] = useState("Best fit");
+  const [filterMenuOpen, setFilterMenuOpen] = useState(false);
+  const [savedViewsOpen, setSavedViewsOpen] = useState(false);
+  const [moreSkillsOpen, setMoreSkillsOpen] = useState(false);
+  const [selectedRowIds, setSelectedRowIds] = useState([]);
+  const [savedInvestorViews, setSavedInvestorViews] = usePersistentState("funding-agent-investor-views", defaultInvestorViews);
   const [eventPeriod, setEventPeriod] = useState("Upcoming");
   const [eventTopic, setEventTopic] = useState("All topics");
   const [eventDateRange, setEventDateRange] = useState("All dates");
-  const [applicationView, setApplicationView] = useState("timeline");
+  const [applicationView, setApplicationView] = useState("calendar");
   const [applicationStatus, setApplicationStatus] = useState("All statuses");
   const [selectedFirmId, setSelectedFirmId] = useState("ensemble");
   const [compareIds, setCompareIds] = useState(["ensemble", "capital", "atx"]);
@@ -385,19 +406,26 @@ export function App() {
     const firmStages = firm.stage.split(/[,\n]/).map((stage) => stage.trim().toLowerCase());
     const matchesStage = stageFilter === "All stages" || firmStages.includes(stageFilter.toLowerCase());
     const matchesCheck = matchesCheckFilter(firm.check, checkFilter);
-    return matchesQuery && matchesCity && matchesFocus && matchesStage && matchesCheck;
+    const matchesStatus = investorStatusFilter === "All statuses" || firm.status === investorStatusFilter;
+    const matchesAccess = investorAccessFilter === "All access" || firm.access === investorAccessFilter;
+    return matchesQuery && matchesCity && matchesFocus && matchesStage && matchesCheck && matchesStatus && matchesAccess;
   }).sort((a, b) => {
+    if (investorSort === "Firm A–Z") return a.name.localeCompare(b.name);
+    if (investorSort === "Deadline first") {
+      const deadlineRank = (firm) => firm.status === "Closing" ? 0 : firm.status === "Open" ? 1 : firm.deadline === "Not tracked" ? 4 : 2;
+      return deadlineRank(a) - deadlineRank(b) || b.fit - a.fit;
+    }
     const bMatch = activeSkill === "All skills" || b.skills.includes(activeSkill) ? 1 : 0;
     const aMatch = activeSkill === "All skills" || a.skills.includes(activeSkill) ? 1 : 0;
     return bMatch - aMatch || b.fit - a.fit;
-  }), [query, city, activeSkill, focusFilter, stageFilter, checkFilter]);
+  }), [query, city, activeSkill, focusFilter, stageFilter, checkFilter, investorStatusFilter, investorAccessFilter, investorSort]);
 
   const filteredEvents = useMemo(() => events.filter((event) => {
     const text = `${event.title} ${event.city} ${event.venue} ${event.description} ${event.tags.join(" ")}`.toLowerCase();
     const matchesQuery = text.includes(query.toLowerCase());
     const matchesRegion = city === "All" || event.region === city;
     const matchesTopic = eventTopic === "All topics" || event.tags.includes(eventTopic);
-    const isUpcoming = event.startDate >= "2026-08-04";
+    const isUpcoming = event.startDate >= new Date().toISOString().slice(0, 10);
     const matchesPeriod = eventPeriod === "Upcoming" ? isUpcoming : !isUpcoming;
     const matchesDate = eventDateRange === "All dates"
       || (eventDateRange === "Aug – Sep 2026" && event.startDate >= "2026-08-01" && event.startDate <= "2026-09-30")
@@ -406,13 +434,15 @@ export function App() {
     return matchesQuery && matchesRegion && matchesTopic && matchesPeriod && matchesDate;
   }), [query, city, eventTopic, eventPeriod, eventDateRange]);
 
-  useEffect(() => setPage(1), [query, city, activeSkill, focusFilter, stageFilter, checkFilter, pageSize]);
+  useEffect(() => setPage(1), [query, city, activeSkill, focusFilter, stageFilter, checkFilter, investorStatusFilter, investorAccessFilter, investorSort, pageSize]);
 
   const pageCount = Math.max(1, Math.ceil(filteredFirms.length / pageSize));
   const currentPage = Math.min(page, pageCount);
   const pageStart = (currentPage - 1) * pageSize;
   const pagedFirms = filteredFirms.slice(pageStart, pageStart + pageSize);
   const paginationItems = getPaginationItems(currentPage, pageCount);
+  const allVisibleSelected = pagedFirms.length > 0 && pagedFirms.every((firm) => selectedRowIds.includes(firm.id));
+  const allResultsSelected = filteredFirms.length > 0 && filteredFirms.every((firm) => selectedRowIds.includes(firm.id));
 
   const selectedFirm = firms.find((firm) => firm.id === selectedFirmId) || firms[0];
   const selectedDeal = dealDetails[selectedDealId];
@@ -427,6 +457,42 @@ export function App() {
       }
       return [...current, id];
     });
+  };
+
+  const toggleRowSelection = (id) => setSelectedRowIds((current) => current.includes(id) ? current.filter((firmId) => firmId !== id) : [...current, id]);
+  const toggleVisibleRows = () => setSelectedRowIds((current) => {
+    const visibleIds = pagedFirms.map((firm) => firm.id);
+    return allVisibleSelected ? current.filter((id) => !visibleIds.includes(id)) : [...new Set([...current, ...visibleIds])];
+  });
+  const toggleAllResults = () => setSelectedRowIds((current) => allResultsSelected
+    ? current.filter((id) => !filteredFirms.some((firm) => firm.id === id))
+    : [...new Set([...current, ...filteredFirms.map((firm) => firm.id)])]);
+  const compareSelected = () => {
+    const next = firms
+      .filter((firm) => selectedRowIds.includes(firm.id))
+      .sort((a, b) => b.fit - a.fit)
+      .slice(0, 3)
+      .map((firm) => firm.id);
+    if (!next.length) {
+      notify("Select at least one firm first");
+      return;
+    }
+    setCompareIds(next);
+    notify(`${next.length} selected ${next.length === 1 ? "firm" : "firms"} added to Compare`);
+  };
+  const applyInvestorView = (view) => {
+    setCity(view.city);
+    setFocusFilter(view.focus);
+    setStageFilter(view.stage);
+    setInvestorStatusFilter(view.status);
+    setInvestorAccessFilter(view.access);
+    setSavedViewsOpen(false);
+  };
+  const saveCurrentInvestorView = () => {
+    const view = { id: `view-${Date.now()}`, label: `${city} · ${focusFilter === "All focus" ? stageFilter : focusFilter}`, city, focus: focusFilter, stage: stageFilter, status: investorStatusFilter, access: investorAccessFilter };
+    setSavedInvestorViews((current) => [...current, view]);
+    setSavedViewsOpen(false);
+    notify("Investor view saved to this workspace");
   };
 
   const switchWorkspace = (nextWorkspace) => {
@@ -444,6 +510,14 @@ export function App() {
     }
     setApplications((current) => [application, ...current]);
     notify(`${firm.name} added to your application timeline`);
+  };
+
+  const saveEventToCalendar = (event, reminderEnabled = false) => {
+    const alreadySaved = applications.some((application) => application.sourceEventId === event.id);
+    setApplications((current) => upsertEventApplication(current, event, { reminderEnabled }));
+    notify(reminderEnabled
+      ? `${event.title} reminder preference saved; delivery worker is not connected yet`
+      : alreadySaved ? `${event.title} is already on your Funding Calendar` : `${event.title} added to your Funding Calendar`);
   };
 
   const graphNodes = useMemo(() => {
@@ -486,9 +560,9 @@ export function App() {
     return [...solid, ...inferred];
   }, []);
 
-  const searchLabel = workspace === "events" ? "Search events" : workspace === "applications" ? "Search applications" : "Search investors";
-  const searchPlaceholder = workspace === "events" ? "Search events, cities, venues, or topics…" : workspace === "applications" ? "Search applications, milestones, or statuses…" : "Search firms, investors, skills, or companies…";
-  const workspaceSubtitle = workspace === "events" ? "Find the rooms where your next investor will be." : workspace === "applications" ? "Track every application, deadline, and follow-up without invented dates." : "Find investors who repeatedly fund what you’re building.";
+  const searchLabel = workspace === "events" ? "Search opportunities" : workspace === "applications" ? "Search funding calendar" : "Search investors";
+  const searchPlaceholder = workspace === "events" ? "Search events, pitch days, cities, or topics…" : workspace === "applications" ? "Search applications, deadlines, events, or reminders…" : "Search firms, investors, skills, or companies…";
+  const workspaceSubtitle = workspace === "events" ? "Discover application windows, pitch days, and investor rooms." : workspace === "applications" ? "Your applications, funding events, deadlines, and reminders in one place." : "Find investors who repeatedly fund what you’re building.";
 
   return (
     <main className={`funding-app ${workspace === "events" ? "events-mode" : workspace === "applications" ? "applications-mode" : ""}`}>
@@ -504,8 +578,8 @@ export function App() {
           <kbd>/</kbd>
         </label>
         <div className="top-actions">
-          <span className="verified"><CheckCircle weight="fill" /> Verified Aug 4</span>
-          <button className="icon-button" aria-label="Refresh sources" onClick={() => notify("Sources refreshed · no deadline changes")}><TrendUp /></button>
+          <span className="verified"><CheckCircle weight="fill" /> Snapshot Aug 4</span>
+          <button className="icon-button" aria-label="Check workspace sources" onClick={() => notify("Workspace snapshot checked · live discovery worker is not connected yet")}><TrendUp /></button>
           {workspace !== "applications" && <div className="city-toggle" role="group" aria-label="City">
             {(workspace === "events" ? ["All", "Texas", "Bay Area"] : ["Austin", "San Francisco"]).map((item) => <button key={item} className={city === item ? "active" : ""} onClick={() => setCity(item)}>{item}</button>)}
           </div>}
@@ -514,19 +588,19 @@ export function App() {
 
       <section className="filterbar" aria-label="Funding filters">
         <div className="workspace-tabs" role="group" aria-label="Workspace">
+          <button className={workspace === "applications" ? "active" : ""} onClick={() => switchWorkspace("applications")}><CalendarBlank /> Funding Calendar <span>{applications.length + events.length}</span></button>
+          <button className={workspace === "events" ? "active" : ""} onClick={() => switchWorkspace("events")}><Binoculars /> Discover <span>{events.length}</span></button>
           <button className={workspace === "investors" ? "active" : ""} onClick={() => switchWorkspace("investors")}>Investors <span>{eddyVcData.meta.recordCount}</span></button>
-          <button className={workspace === "events" ? "active" : ""} onClick={() => switchWorkspace("events")}>Events <span>{events.length}</span></button>
-          <button className={workspace === "applications" ? "active" : ""} onClick={() => switchWorkspace("applications")}>Applications <span>{applications.length}</span></button>
         </div>
         {workspace === "investors" ? <>
           <ToolbarNativeSelect label="Your focus" value={focusFilter} options={focusOptions} onChange={setFocusFilter} icon={Sparkle} />
           <ToolbarNativeSelect label="Stage" value={stageFilter} options={stageOptions} onChange={setStageFilter} />
           <ToolbarNativeSelect label="Check size" value={checkFilter} options={checkOptions} onChange={setCheckFilter} />
           <ToolbarNativeSelect label="Evidence window" value={evidenceWindow} options={evidenceOptions} onChange={setEvidenceWindow} icon={CalendarBlank} />
-          <button className="clear-button" onClick={() => { setQuery(""); setActiveSkill("AI/ML"); setFocusFilter("All focus"); setStageFilter("All stages"); setCheckFilter("Any check size"); setEvidenceWindow("Since 2018"); }}>Clear all</button>
+          <button className="clear-button" onClick={() => { setQuery(""); setActiveSkill("AI/ML"); setFocusFilter("All focus"); setStageFilter("All stages"); setCheckFilter("Any check size"); setEvidenceWindow("Since 2018"); setInvestorStatusFilter("All statuses"); setInvestorAccessFilter("All access"); setInvestorSort("Best fit"); }}>Clear all</button>
           <span className="filter-spacer" />
-          <ActionButton icon={Funnel} onClick={() => notify("Filters are ready to personalize")}>Filters</ActionButton>
-          <ActionButton icon={BookmarkSimple} onClick={() => notify("Current view saved")}>Saved views <CaretDown /></ActionButton>
+          <div className="toolbar-menu-wrap"><ActionButton icon={Funnel} onClick={() => { setFilterMenuOpen((current) => !current); setSavedViewsOpen(false); }}>Filters <CaretDown /></ActionButton>{filterMenuOpen && <div className="toolbar-menu investor-filter-menu" role="menu"><strong>Table filters</strong><ToolbarNativeSelect label="Investor status" value={investorStatusFilter} options={investorStatusOptions} onChange={setInvestorStatusFilter} /><ToolbarNativeSelect label="Investor access" value={investorAccessFilter} options={investorAccessOptions} onChange={setInvestorAccessFilter} /><ToolbarNativeSelect label="Sort investors" value={investorSort} options={investorSortOptions} onChange={setInvestorSort} /></div>}</div>
+          <div className="toolbar-menu-wrap"><ActionButton icon={BookmarkSimple} onClick={() => { setSavedViewsOpen((current) => !current); setFilterMenuOpen(false); }}>Saved views <CaretDown /></ActionButton>{savedViewsOpen && <div className="toolbar-menu saved-views-menu" role="menu"><strong>Saved views</strong>{savedInvestorViews.map((view) => <button key={view.id} role="menuitem" onClick={() => applyInvestorView(view)}><span>{view.label}</span><small>{view.city} · {view.focus}</small></button>)}<button className="save-current-view" onClick={saveCurrentInvestorView}><Plus /> Save current view</button></div>}</div>
         </> : workspace === "events" ? <>
           <div className="event-period-toggle" role="group" aria-label="Event period">
             {["Upcoming", "Past"].map((period) => <button key={period} className={eventPeriod === period ? "active" : ""} onClick={() => setEventPeriod(period)}>{period}</button>)}
@@ -544,8 +618,8 @@ export function App() {
           </div>
           <button className="clear-button" onClick={() => { setQuery(""); setApplicationStatus("All statuses"); }}>Clear all</button>
           <span className="filter-spacer" />
-          <ActionButton icon={CalendarDots} onClick={() => notify("Google Calendar sync requires Google OAuth; one-click event links are available now")}>Google Calendar</ActionButton>
-          <ActionButton icon={FileArrowDown} onClick={() => notify("Application timeline report prepared for export")}>Export timeline</ActionButton>
+          <ActionButton icon={Binoculars} onClick={() => switchWorkspace("events")}>Discover opportunities</ActionButton>
+          <ActionButton icon={CalendarDots} onClick={() => notify("Google Calendar sync requires Google OAuth; one-click calendar links are available now")}>Connect Google</ActionButton>
         </>}
       </section>
 
@@ -570,30 +644,38 @@ export function App() {
           </div>
           {filteredEvents.length ? (
             <div className="events-grid">
-              {filteredEvents.map((event) => <EventCard key={event.id} event={event} onNotify={notify} />)}
+              {filteredEvents.map((event) => <EventCard key={event.id} event={event} onNotify={notify} onSaveEvent={saveEventToCalendar} />)}
             </div>
           ) : (
             <div className="events-empty"><CalendarBlank /><h3>No {eventPeriod.toLowerCase()} events match this view</h3><p>Clear the topic, region, or search filters to widen the verified set.</p><button onClick={() => { setQuery(""); setEventTopic("All topics"); setEventDateRange("All dates"); setEventPeriod("Upcoming"); setCity("All"); }}>Show all upcoming events</button></div>
           )}
         </section>
       ) : workspace === "applications" ? (
-        <ApplicationWorkspace applications={applications} setApplications={setApplications} view={applicationView} setView={setApplicationView} statusFilter={applicationStatus} query={query} onNotify={notify} />
+        <ApplicationWorkspace applications={applications} setApplications={setApplications} events={events} view={applicationView} setView={setApplicationView} statusFilter={applicationStatus} query={query} onNotify={notify} onOpenDiscovery={() => switchWorkspace("events")} onSaveEvent={saveEventToCalendar} />
       ) : <>
       <section className={`primary-workspace investor-${investorView}-mode`}>
         <section className={`firm-table-panel view-${investorView}`}>
           <div className="panel-title investor-panel-title"><h2>{investorView === "table" ? "Table" : investorView === "list" ? "List" : "Map"}</h2><span>{filteredFirms.length} firms · Eddy snapshot Aug 4</span><div className="investor-view-toggle" role="group" aria-label="Investor view"><button className={investorView === "map" ? "active" : ""} aria-label="Map view" onClick={() => setInvestorView("map")}><MapTrifold /></button><button className={investorView === "list" ? "active" : ""} aria-label="List view" onClick={() => setInvestorView("list")}><CardsThree /></button><button className={investorView === "table" ? "active" : ""} aria-label="Table view" onClick={() => setInvestorView("table")}><TableIcon /></button></div></div>
-          {investorView === "table" ? <div className="table-wrap">
+          {investorView === "table" ? <><div className="table-smart-toolbar">
+            <label className="table-search"><MagnifyingGlass /><input aria-label="Search investor table" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search this table…" /></label>
+            <ToolbarNativeSelect label="Table status" value={investorStatusFilter} options={investorStatusOptions} onChange={setInvestorStatusFilter} />
+            <ToolbarNativeSelect label="Table access" value={investorAccessFilter} options={investorAccessOptions} onChange={setInvestorAccessFilter} />
+            <ToolbarNativeSelect label="Table sort" value={investorSort} options={investorSortOptions} onChange={setInvestorSort} />
+            <button className={`select-all-results ${allResultsSelected ? "active" : ""}`} onClick={toggleAllResults}>{allResultsSelected ? <Check weight="bold" /> : null}{allResultsSelected ? "Clear results" : `Select all ${filteredFirms.length}`}</button>
+            {selectedRowIds.length > 0 && <div className="bulk-selection"><strong>{selectedRowIds.length} selected</strong><button onClick={compareSelected}>Compare best 3</button><button onClick={() => setSelectedRowIds([])}>Clear</button></div>}
+          </div><div className="table-wrap">
             <table>
               <thead>
-                <tr><th aria-label="Compare"></th><th>#</th><th>Firm</th><th>Fit</th><th>Stage</th><th>Access</th><th>Deadline</th><th>Status</th></tr>
+                <tr><th><button className={`row-check ${allVisibleSelected ? "checked" : ""}`} onClick={toggleVisibleRows} aria-label={allVisibleSelected ? "Clear visible firm selection" : "Select all visible firms"}>{allVisibleSelected && <Check weight="bold" />}</button></th><th>#</th><th>Firm</th><th>Fit</th><th>Stage</th><th>Access</th><th>Deadline</th><th>Status</th></tr>
               </thead>
               <tbody>
                 {pagedFirms.map((firm, index) => {
                   const compared = compareIds.includes(firm.id);
+                  const rowSelected = selectedRowIds.includes(firm.id);
                   const selected = selectedFirmId === firm.id;
                   return (
-                    <tr key={firm.id} className={`${selected ? "selected" : ""} ${compared ? "compared" : ""}`} onClick={() => setSelectedFirmId(firm.id)}>
-                      <td><button className={`row-check ${compared ? "checked" : ""}`} onClick={(event) => { event.stopPropagation(); toggleCompare(firm.id); }} aria-label={`${compared ? "Remove" : "Add"} ${firm.name} ${compared ? "from" : "to"} compare`}>{compared && <Check weight="bold" />}</button></td>
+                    <tr key={firm.id} className={`${selected ? "selected" : ""} ${compared ? "compared" : ""} ${rowSelected ? "bulk-selected" : ""}`} onClick={() => setSelectedFirmId(firm.id)}>
+                      <td><button className={`row-check ${rowSelected ? "checked" : ""}`} onClick={(event) => { event.stopPropagation(); toggleRowSelection(firm.id); }} aria-label={`${rowSelected ? "Deselect" : "Select"} ${firm.name}`}>{rowSelected && <Check weight="bold" />}</button></td>
                       <td className="row-index">{pageStart + index + 1}</td>
                       <td><div className="firm-cell"><FirmMark firm={firm} compact /><div><strong>{firm.name}</strong><span>{firm.location}</span></div></div></td>
                       <td><span className={`fit-pill fit-${firm.fit >= 80 ? "high" : firm.fit >= 65 ? "medium" : "low"}`}>{firm.fit}</span></td>
@@ -606,7 +688,7 @@ export function App() {
                 })}
               </tbody>
             </table>
-          </div> : investorView === "list" ? <div className="investor-list-view">{pagedFirms.map((firm) => <article key={firm.id} className={selectedFirmId === firm.id ? "selected" : ""} onClick={() => setSelectedFirmId(firm.id)}><header><FirmMark firm={firm} /><div><strong>{firm.name}</strong><span>{firm.location}</span></div><b className={`fit-pill fit-${firm.fit >= 80 ? "high" : firm.fit >= 65 ? "medium" : "low"}`}>{firm.fit}</b></header><p>{firm.description || `${firm.stage} investor focused on ${firm.skills.join(", ")}.`}</p><div className="investor-list-tags">{firm.skills.map((skill) => <span key={skill}>{skill}</span>)}</div><dl><div><dt>Stage</dt><dd>{firm.stage}</dd></div><div><dt>Check size</dt><dd>{firm.check}</dd></div><div><dt>Access</dt><dd>{firm.access}</dd></div></dl><footer><span className={`status-dot status-${firm.status.toLowerCase()}`} />{firm.status}<span>{firm.deadline}</span><button onClick={(event) => { event.stopPropagation(); saveFirmToTimeline(firm); }}><CalendarBlank /> Track</button>{firm.websiteUrl && <a href={firm.websiteUrl} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()}>Website <ArrowSquareOut /></a>}</footer></article>)}</div> : <InvestorMap firms={filteredFirms} selectedFirmId={selectedFirmId} onSelect={setSelectedFirmId} city={city} />}
+          </div></> : investorView === "list" ? <div className="investor-list-view">{pagedFirms.map((firm) => <article key={firm.id} className={selectedFirmId === firm.id ? "selected" : ""} onClick={() => setSelectedFirmId(firm.id)}><header><FirmMark firm={firm} /><div><strong>{firm.name}</strong><span>{firm.location}</span></div><b className={`fit-pill fit-${firm.fit >= 80 ? "high" : firm.fit >= 65 ? "medium" : "low"}`}>{firm.fit}</b></header><p>{firm.description || `${firm.stage} investor focused on ${firm.skills.join(", ")}.`}</p><div className="investor-list-tags">{firm.skills.map((skill) => <span key={skill}>{skill}</span>)}</div><dl><div><dt>Stage</dt><dd>{firm.stage}</dd></div><div><dt>Check size</dt><dd>{firm.check}</dd></div><div><dt>Access</dt><dd>{firm.access}</dd></div></dl><footer><span className={`status-dot status-${firm.status.toLowerCase()}`} />{firm.status}<span>{firm.deadline}</span><button onClick={(event) => { event.stopPropagation(); saveFirmToTimeline(firm); }}><CalendarBlank /> Track</button>{firm.websiteUrl && <a href={firm.websiteUrl} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()}>Website <ArrowSquareOut /></a>}</footer></article>)}</div> : <InvestorMap firms={filteredFirms} selectedFirmId={selectedFirmId} onSelect={setSelectedFirmId} city={city} />}
           <footer className="table-footer">
             <span>{investorView === "map" ? `${filteredFirms.filter((firm) => Number.isFinite(firm.lat) && Number.isFinite(firm.lng)).length} mapped of ${filteredFirms.length}` : `Showing ${filteredFirms.length ? pageStart + 1 : 0}–${Math.min(pageStart + pageSize, filteredFirms.length)} of ${filteredFirms.length}`}</span>
             {investorView !== "map" && <nav className="pagination" aria-label="Investor pages">
@@ -635,7 +717,7 @@ export function App() {
             <div className="panel-title graph-heading"><h2>Deal graph</h2><span>Exploring {compareIds.length} firms · {evidenceWindow}</span></div>
             <div className="skill-tabs">
               {["All skills", "AI/ML", "Infrastructure", "B2B SaaS", "Defense", "Media"].map((skill) => <button key={skill} className={activeSkill === skill ? "active" : ""} onClick={() => setActiveSkill(skill)}>{skill}</button>)}
-              <button>More <CaretDown /></button>
+              <div className="skill-more-wrap"><button aria-expanded={moreSkillsOpen} onClick={() => setMoreSkillsOpen((current) => !current)}>More <CaretDown /></button>{moreSkillsOpen && <div className="skill-more-menu" role="menu">{moreSkillOptions.map((skill) => <button key={skill} role="menuitem" className={activeSkill === skill ? "active" : ""} onClick={() => { setActiveSkill(skill); setMoreSkillsOpen(false); }}>{skill}</button>)}</div>}</div>
             </div>
             <div className="graph-canvas">
               <ReactFlow
