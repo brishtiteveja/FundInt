@@ -1,0 +1,841 @@
+# Hand-reviewed labels for YC 2026 companies.
+# name | archetype | sector | ai_depth
+# archetype: INF agent/AI-app infrastructure, TRU agent reliability/evals/AI security, DEV AI for software engineering,
+#   MOD models/inference/compute, DAT training data/RL envs/benchmarks, VRT vertical & functional AI software,
+#   SVC AI-native services firm, HOR horizontal enterprise AI, PHY physical AI & robotics, DEF defense & national security,
+#   SCI AI for science/bio/materials, HRD hard tech (space/energy/mfg/semis), CON consumer apps & devices,
+#   FIN fintech & markets, SEC cybersecurity, OTH other software
+# sector: tech, ent, health, fin, ins, legal, gtm, hr, mfg, log, build, energy, def, smb, cons, edu
+# ai_depth: N AI-core, S AI supply chain (compute/data-center build-out), E AI-enabled, X non-AI
+Menza|VRT|smb|N
+Bidflow|VRT|build|N
+GRU Space|HRD|def|X
+Signals|OTH|smb|E
+Overdrive Health|SVC|health|N
+Autumn|VRT|gtm|N
+Pollen|HOR|ent|N
+Button Computer|CON|cons|N
+Alt-X|FIN|fin|X
+Velum Labs|OTH|tech|E
+Travo|OTH|ent|X
+Agentic Fabriq|TRU|tech|N
+Captain|INF|tech|N
+Oxus|VRT|fin|N
+General Astronautics|PHY|def|N
+Vector Legal|SVC|legal|N
+Voltair|PHY|def|N
+Crosslayer Labs|SEC|tech|E
+Ndea|MOD|tech|N
+Standard Physics|VRT|mfg|E
+ClaimGlide|VRT|health|N
+Haladir|VRT|log|N
+Mantis|VRT|ent|N
+CatchBack Cards|CON|cons|X
+FullSeam|VRT|fin|N
+Corvera|VRT|smb|N
+ARC Prize Foundation|DAT|tech|N
+Valgo|VRT|ins|N
+Eos AI|VRT|health|N
+Hlabs|HRD|mfg|X
+Origin|SCI|health|N
+Payna|VRT|legal|N
+Panta|SVC|ins|N
+Didit|SEC|tech|E
+One Robot|DAT|tech|N
+Quotient Labs|MOD|tech|N
+Kita|VRT|fin|N
+Klaus AI|INF|tech|N
+Janeen|VRT|health|N
+Lucent|DEV|tech|N
+RunAnywhere|MOD|tech|N
+Lance|VRT|smb|N
+Docura Health|SVC|legal|N
+Mirabelle|CON|cons|X
+Axis|VRT|fin|N
+Lexius|PHY|ent|N
+Asimov|DAT|tech|N
+shortkit|OTH|cons|X
+REV1|VRT|mfg|N
+10x Science|SCI|health|N
+Sentrial|TRU|tech|N
+LegalOS|SVC|legal|N
+Cofia|HOR|ent|N
+BaseFrame|HOR|ent|N
+Strand AI|SCI|health|N
+Beacon Health|VRT|health|N
+Envariant|TRU|tech|N
+Burt|VRT|log|N
+CellType|SCI|health|N
+Piris Labs|MOD|tech|S
+OpenSpec|DEV|tech|N
+/dev/fast|DEV|tech|N
+ZeroSettle|FIN|tech|X
+Kyten Technologies|HRD|def|X
+Avoice|VRT|build|N
+21st|DEV|tech|N
+Palus Finance|VRT|fin|E
+Tepali|VRT|health|N
+Cumulus Labs|MOD|tech|N
+Verdex|VRT|ins|N
+AutoSitu|VRT|build|N
+Zatanna|INF|tech|N
+MouseCat|VRT|fin|N
+Skillsync|INF|tech|N
+RoboDock|PHY|log|N
+Scheduling Wizard|VRT|health|E
+Luel|DAT|tech|N
+Aemon|SCI|tech|N
+Ashr|MOD|tech|N
+CodeWisp|CON|cons|N
+OctaPulse|PHY|energy|N
+Beyond Reach Labs|HRD|def|X
+Milliray|DEF|def|E
+RamAIn|HOR|ent|N
+Moritz|SVC|legal|N
+Salus|TRU|tech|N
+EigenPal|HOR|ent|N
+Sparkles|DEV|tech|N
+Fern|DAT|tech|N
+Perfectly|VRT|hr|N
+Orthogonal|INF|tech|N
+Q2Q|VRT|fin|N
+Ventura|VRT|log|N
+Terranox AI|SCI|energy|N
+Sponge|INF|tech|N
+Mango Medical|VRT|health|N
+Confluence Labs|MOD|tech|N
+Opalite Health|VRT|health|N
+Compresr|MOD|tech|N
+IncidentFox|DEV|tech|N
+Unisson|HOR|ent|N
+Stilta|VRT|legal|N
+Instinct|FIN|fin|N
+Proximitty|VRT|fin|N
+Cajal|SCI|tech|N
+Overshoot|MOD|tech|N
+Terminal Use|HOR|ent|N
+Laurence|VRT|gtm|N
+Parameter|SEC|tech|N
+Pax Historia|CON|cons|N
+Rhizome AI|SCI|health|N
+Prana|CON|health|N
+Cardboard|CON|cons|N
+Jinba|HOR|ent|N
+Seeing Systems|DEF|def|N
+Synthetic Sciences|SCI|tech|N
+Visibl Semiconductors|HRD|mfg|X
+Patientdesk.ai|VRT|health|N
+Chamber|DEV|tech|N
+End Close|VRT|fin|N
+Fenrock AI|VRT|fin|N
+Maywood|VRT|fin|N
+Revion|VRT|smb|N
+Traverse|MOD|tech|N
+SideKit|CON|cons|E
+Valence|FIN|fin|X
+Reframe|VRT|log|N
+Congruent|PHY|log|N
+InventoryQuant|VRT|ins|N
+Emdash|DEV|tech|N
+Ressl AI|TRU|tech|N
+Robby|VRT|smb|N
+Sitefire|VRT|gtm|N
+Forum|FIN|fin|E
+Human Archive|DAT|tech|N
+Samora AI|VRT|gtm|N
+Caretta|VRT|gtm|N
+Oximy|TRU|tech|N
+AxionOrbital Space|MOD|def|N
+Mendral|DEV|tech|N
+Constellation Space|VRT|def|N
+Byteport|OTH|tech|X
+Pocket|CON|cons|N
+Bubble Lab|OTH|gtm|E
+Polymath|DAT|tech|N
+Voxel Energy|HRD|energy|S
+Servo7|PHY|log|N
+Ditto Biosciences|SCI|health|N
+Sequence Markets|FIN|fin|X
+Doomersion|CON|edu|E
+o11|INF|tech|N
+Anchorhead|DAT|tech|N
+Remy AI|PHY|log|N
+Chasi|VRT|mfg|N
+Balance|SVC|fin|N
+Fort|CON|cons|E
+General Legal|SVC|legal|N
+Corelayer|DEV|tech|N
+Booko|VRT|smb|E
+Foreman|VRT|build|N
+Turnstone|CON|cons|N
+Squid|VRT|energy|N
+Fed10|VRT|legal|N
+BeeSafe AI|SEC|tech|N
+The Token Company|MOD|tech|N
+Moda|TRU|tech|N
+Maven|INF|tech|N
+Sila|CON|cons|N
+Grade|FIN|hr|X
+Canary|TRU|tech|N
+Copperlane|VRT|fin|N
+Talking Computers|MOD|tech|N
+Veriad|VRT|gtm|N
+Vela|VRT|hr|N
+MochaCare|VRT|health|N
+VOYGR|INF|tech|N
+SpotPay|FIN|fin|X
+Khotan (formerly Pollinate)|HOR|ent|N
+Polymorph|SEC|tech|E
+TensorTest|DAT|tech|N
+Zymbly|VRT|def|E
+Rubric AI|TRU|tech|N
+Ossus|VRT|edu|N
+Origami Robotics|PHY|mfg|N
+Brumby|PHY|energy|N
+DAIVIN!|HRD|cons|X
+Fixture|VRT|gtm|N
+Aurorin CAD|VRT|mfg|N
+Carrot Labs|TRU|tech|N
+Unifold|FIN|fin|X
+Wayco|VRT|legal|N
+Shofo|DAT|tech|N
+Remix|VRT|gtm|N
+Condor Energy|OTH|energy|E
+Martini|VRT|cons|N
+Wideframe|VRT|cons|N
+Cardinal|VRT|gtm|N
+jo|CON|cons|N
+Autostep|HOR|ent|N
+Humwork|INF|tech|N
+Miso Labs|MOD|tech|N
+Foresight|VRT|gtm|N
+Smartbase|VRT|mfg|N
+FinalDose|SCI|health|E
+Prism|SVC|hr|N
+Teaflask|INF|tech|N
+Ploy|VRT|gtm|E
+Advanced Metal Research|PHY|mfg|N
+Linzumi|DEV|tech|N
+Clara|CON|health|N
+Imperfect|CON|cons|E
+Fuchsia|VRT|legal|E
+Cignara|VRT|gtm|N
+Drafted|CON|build|N
+9 Mothers|DEF|def|E
+Sazabi|SEC|tech|N
+Netter|HOR|ent|N
+Paradev (formerly Superset)|DEV|tech|N
+Inth|SEC|tech|E
+Regbase|VRT|legal|E
+Rainbrand|INF|tech|N
+Dispatch|HRD|def|X
+Hedge|SVC|ins|N
+Surtr Defense Systems|DEF|def|N
+Klarify|VRT|health|N
+Korso|OTH|ent|X
+primitive|INF|tech|N
+Standard Signal|SVC|fin|N
+Vespin|DEV|tech|N
+PerfectBit, Inc.|PHY|mfg|N
+Memoir|HOR|ent|N
+Multiplier|VRT|fin|N
+Totalis|FIN|fin|X
+Replicas|DEV|tech|N
+Rudus|VRT|build|N
+Hexa|VRT|log|N
+Scope|INF|tech|N
+Twolabs|DAT|tech|N
+LightSprint|DEV|tech|N
+Discovered Materials|SCI|mfg|N
+Saffron|VRT|hr|N
+Chert|OTH|gtm|X
+Nine Fives|HRD|def|X
+Andustry|OTH|ent|X
+InLoop Robotics|PHY|log|N
+Dayjob|VRT|log|N
+Trellis|VRT|build|N
+Atrisa|VRT|mfg|N
+Tenet Industries|PHY|mfg|N
+Hub|DAT|tech|N
+Light Anchor|SVC|gtm|N
+Limrun|DEV|tech|N
+Superlog|DEV|tech|N
+GovGuard|VRT|legal|N
+Kinro|SVC|ins|N
+Juno|CON|health|N
+Zolvo|VRT|fin|N
+Interfaze|MOD|tech|N
+Elyra|VRT|smb|N
+Wealor|VRT|fin|N
+HEVN, inc|FIN|fin|X
+KelAI|VRT|fin|N
+Deep Interactions|DEV|tech|N
+BayMachines|MOD|def|S
+Pavoot|VRT|smb|N
+Madrone|HRD|energy|S
+shotwell.ai|DAT|tech|N
+Standout|VRT|hr|N
+transload|PHY|log|N
+Userlens|VRT|gtm|N
+Sherpa|VRT|gtm|N
+Antinuous|SCI|tech|N
+InstaAgent|VRT|gtm|N
+RentAHuman|INF|tech|N
+Andco|VRT|legal|N
+Arga Labs|DAT|tech|N
+Dreach|VRT|hr|E
+Synphony|PHY|energy|N
+Callab AI|VRT|gtm|N
+Pairio|VRT|mfg|N
+Taiga|VRT|health|N
+StableBrowse|DAT|tech|N
+Kimpton|DAT|tech|N
+Lamina Labs|MOD|tech|N
+BentoLabs AI|TRU|tech|N
+Lab0|HOR|ent|N
+Gojiberry AI|VRT|gtm|N
+Paper Star|HOR|ent|N
+Ontora|HOR|ent|N
+Oddpool|FIN|fin|X
+Voquill|VRT|health|N
+Keyframe Labs|MOD|tech|N
+Savant|HOR|ent|N
+Adialante|SCI|health|E
+Lumius|HRD|health|E
+Prototyping.io|PHY|mfg|N
+Result|HOR|smb|N
+Parrot|VRT|smb|N
+AGI Deploy Co|SVC|ent|N
+Infera|SCI|health|N
+AICE|DEF|def|E
+Complir|VRT|legal|E
+Alchemize|SVC|log|N
+Harbor|SVC|health|N
+Allowance|INF|tech|N
+smol machines|DEV|tech|E
+River Markets|FIN|fin|X
+Masterpiece|FIN|fin|S
+Minicor|HOR|ent|N
+decuff|MOD|tech|N
+tday.com|VRT|gtm|N
+General Instinct|PHY|tech|N
+ValCtrl|FIN|fin|N
+Zibra Labs|MOD|tech|N
+PLAN0 AI|VRT|build|N
+Armature|INF|tech|N
+Soria|VRT|fin|N
+Aseon Labs|PHY|log|N
+Walter|VRT|mfg|N
+Chronicle Labs|TRU|tech|N
+Tasklet|HOR|ent|N
+Wato|TRU|tech|N
+Kuli|VRT|gtm|N
+Ardent|INF|tech|N
+BioStack Platforms|DAT|health|N
+Silmaril|TRU|tech|N
+Pops|CON|cons|N
+Saudara AI|SVC|mfg|N
+Memory Store|HOR|ent|N
+AbInitio Bio|VRT|health|N
+ANORIA|CON|cons|N
+Ornadyne|DEF|def|E
+AquaShield|VRT|build|N
+Foaster|SVC|ent|N
+Eden Robotics|PHY|mfg|N
+e2e|DEV|tech|N
+Plena Health|VRT|health|N
+RASPIRE|SEC|tech|N
+Hessian|HOR|ent|N
+Amboras|VRT|smb|N
+Aster|SCI|tech|N
+General Aviation Company|HRD|def|E
+Apollo Atomics, Inc.|HRD|energy|X
+OpenWork|HOR|ent|N
+Tolmo|SEC|tech|N
+ProjectX|HOR|ent|N
+Auxos|VRT|gtm|N
+Arzana|VRT|mfg|N
+Aernata|HRD|energy|X
+CharacterQuilt|VRT|gtm|N
+Probe|SCI|tech|N
+Expanse|MOD|tech|N
+YouArt|CON|cons|N
+Runtime|VRT|fin|N
+Kinect|VRT|smb|N
+Gravy|CON|fin|N
+AgentPhone|INF|tech|N
+Arden|SVC|fin|N
+Uno Wallet|CON|fin|N
+Revnu|VRT|gtm|N
+Asendia AI|VRT|hr|N
+Mochatrade|FIN|fin|X
+Avea Robotics|PHY|tech|N
+Manicule|INF|tech|N
+Lattice Health|TRU|health|N
+Astraea|VRT|health|N
+Arlo Industries|DEF|def|E
+PumpGTM|VRT|gtm|N
+flowscope|SVC|ent|N
+Klaimee|INF|ins|N
+KugelAudio|MOD|tech|N
+CentralComs|VRT|smb|N
+Panacea|SVC|health|N
+Modern|VRT|fin|N
+ReasonBlocks|MOD|tech|N
+InstaBox|INF|tech|N
+Hyper|HOR|ent|N
+Enjamb Labs|VRT|health|N
+Arctic Health|VRT|health|N
+Framewise Health|VRT|health|N
+Clawvisor|INF|tech|N
+Intelligence Factory|PHY|tech|N
+Maquoketa Research|VRT|cons|N
+Cohesion|VRT|fin|N
+Thomas|SVC|ent|N
+Huscarl|VRT|ins|N
+GBrain|CON|cons|N
+HeyClicky|CON|cons|N
+Akkari|VRT|gtm|N
+Baud|MOD|tech|S
+Async|HOR|ent|N
+Induction Labs|MOD|tech|N
+OS3|PHY|mfg|N
+Evergrove|SVC|health|N
+Tensr|PHY|mfg|N
+Sunflower|SVC|health|N
+Frontier Computing|MOD|tech|S
+Waddle Labs|PHY|tech|N
+OneTriangle|MOD|tech|N
+Prescience, Inc.|SVC|ins|N
+Rapidfolio|VRT|fin|N
+Assemble|HOR|ent|N
+Archal|INF|tech|N
+Datoric|DAT|tech|N
+Libra Robotics|PHY|build|N
+Ekpa|VRT|fin|N
+Meteoric|HRD|energy|E
+Atlia|SVC|build|N
+Dream|PHY|log|N
+Tsenta|CON|hr|N
+Control Seat|VRT|mfg|N
+Cova|FIN|cons|E
+Poth Labs|VRT|gtm|N
+Dipole Labs|MOD|tech|S
+Applied Electrodynamics, Inc.|HRD|def|X
+OpenVector|PHY|ent|N
+Litmus|VRT|hr|N
+Illume Labs|CON|health|N
+Most Robotic|PHY|cons|N
+Palette|VRT|cons|N
+Marker|HOR|ent|N
+WonderTx|SCI|health|N
+Sidekick|VRT|mfg|N
+Mentlio|DEV|tech|N
+Atlas Discovery|SCI|health|N
+Trident|SEC|tech|N
+rekursiv.ai|SCI|tech|N
+Amorphic Labs|INF|tech|N
+Proprio Robotics|PHY|energy|N
+Rindler|DEV|tech|N
+Edgerun|DEF|def|X
+GitCafe|DEV|tech|N
+Kebra|VRT|smb|N
+Torus|VRT|build|N
+tash|FIN|cons|X
+Pango|VRT|smb|N
+Hoplite|DEV|tech|N
+Moonshot|CON|cons|N
+Donkey|SVC|log|N
+HERA|VRT|mfg|N
+Erinys|VRT|legal|N
+Perceptron ML|VRT|legal|N
+Mass Magnetics|HRD|mfg|X
+Egoist Machines|INF|tech|N
+Olam Labs|DAT|tech|N
+Shielded|FIN|log|E
+Belvedir|MOD|tech|N
+Parasma|MOD|tech|S
+Trope|HOR|ent|N
+palisade|VRT|gtm|N
+Kara|HRD|mfg|X
+NebuSec|SEC|tech|N
+Zomma|SVC|fin|N
+Rex|VRT|fin|N
+Enact|DAT|tech|N
+Maingen|DAT|tech|N
+MusicArena|DAT|tech|N
+Bernard|VRT|smb|N
+Studio|VRT|gtm|N
+Prized|DEV|tech|E
+Orchestra|MOD|tech|N
+Synapse Semiconductor|MOD|tech|S
+Speko|MOD|tech|N
+Gutgutgoose|CON|health|E
+LemonLime|VRT|smb|N
+Jcode|DEV|tech|N
+Insurf|VRT|ins|N
+IMPACT Drones|DEF|def|E
+Verdant|VRT|legal|N
+General Context Labs|DAT|tech|N
+Rise Reforming|HRD|energy|X
+Floracene|DEV|health|N
+GUILD|DEF|def|E
+RealPact|VRT|build|N
+Riften|MOD|tech|N
+Bizmark|VRT|mfg|N
+Mosaic|DEV|tech|N
+Dialogus|VRT|gtm|N
+Alloovium|VRT|build|N
+Mochi|CON|cons|E
+DeepReach Inc.|DAT|tech|N
+COACH|VRT|gtm|N
+Grocalo|CON|cons|N
+Audun|SVC|fin|N
+Marble|VRT|smb|N
+Stoa|FIN|tech|S
+Glen|INF|tech|N
+Context.dev|INF|tech|N
+Codag|INF|tech|N
+Exosat|HRD|def|X
+Touchmark|FIN|tech|S
+Prodigy Research|MOD|fin|N
+Zaplar|VRT|smb|N
+Spectre Intelligence|SVC|fin|N
+screenpipe|HOR|ent|N
+Manifold|PHY|mfg|N
+Rasyn|SCI|mfg|E
+Callbook AI|SVC|fin|N
+Tarifflo Inc.|VRT|log|E
+Traceforce|TRU|tech|N
+EdotEnv|DAT|tech|N
+Standard Machines|VRT|mfg|N
+Agency Tool Company|PHY|tech|N
+Snowstone|SVC|fin|N
+Molagri|SCI|energy|E
+Peer|SVC|log|N
+Elite|VRT|health|N
+FlowManual|VRT|build|N
+Pluto|INF|tech|N
+machine0|INF|tech|N
+Bloomy|VRT|edu|N
+6thSense|PHY|tech|N
+Nori|PHY|cons|N
+Ooak Data|DAT|tech|N
+Graphify Labs|INF|tech|N
+Aerogen Systems|HRD|mfg|E
+Hilstart|VRT|mfg|N
+Greypoint Industries|DEF|def|N
+TareBio|SCI|health|E
+Almanac|HOR|ent|N
+Whitespace|VRT|log|N
+Click|INF|tech|N
+Akon Labs|DEV|tech|N
+Aktoria Robotics|PHY|tech|N
+Rational|SVC|fin|N
+Omanta|SVC|health|N
+Fabraix|TRU|tech|N
+Qlo|VRT|ins|N
+Tenor|INF|tech|N
+Daqstra|VRT|mfg|N
+LATO|VRT|fin|N
+Neuromorphic|PHY|health|N
+Neuron Industries|PHY|mfg|N
+Arbital|FIN|cons|X
+Ultrasonium|HRD|mfg|X
+Vestris|VRT|build|N
+Moving Atoms|VRT|build|E
+Ekho Labs|VRT|log|N
+Isengard Industries Inc|DEF|def|N
+Denta|FIN|ins|X
+Computable|FIN|tech|S
+TryNearby|OTH|smb|X
+Financial Datasets|INF|fin|N
+Luca IQ|VRT|fin|E
+Pacific|PHY|energy|N
+Bear|SVC|fin|N
+Executor|INF|tech|N
+Waybill|VRT|log|N
+RonanRx Inc.|SCI|health|X
+Marengo|SVC|energy|N
+Lumeria|CON|health|E
+Markov|DAT|tech|N
+Cosmic Robotics|PHY|build|N
+Operon|VRT|mfg|N
+Inkbox|INF|tech|N
+Gamgee|SCI|health|E
+ProvenMetal|PHY|mfg|N
+Agentcard|INF|tech|N
+Agnost AI|TRU|tech|N
+Radley|SVC|health|N
+Care GP|VRT|health|N
+Praxis Robotics|DAT|tech|N
+Levocred AI|VRT|fin|N
+Axelrod|SVC|smb|N
+CarSignal|VRT|smb|N
+Decawork|TRU|tech|N
+Pennant|VRT|fin|N
+Derya|SVC|log|N
+Tokenless|DAT|tech|N
+Mireye|INF|tech|N
+Shiraz AI|PHY|mfg|N
+Lamb Labs|MOD|tech|S
+Capto|VRT|legal|E
+83 Sciences|SCI|mfg|N
+palisade-2|SEC|tech|N
+Hubble|VRT|health|N
+Skymerse|VRT|def|N
+Grip|PHY|energy|N
+HyperProbe|DEV|tech|N
+TovenAI|VRT|fin|N
+Verdict Machine|SEC|fin|N
+Dock|HOR|smb|N
+OpenRelay|MOD|tech|N
+Hop Aero|DEF|def|X
+PRINCEPS|FIN|ins|S
+Hebbian Robotics|PHY|tech|N
+Earendil Robotics|DEF|def|N
+Florin|SVC|ins|N
+Locke|SVC|legal|N
+Petrarch|DAT|tech|N
+SpaceFlow Technologies, Inc.|SVC|log|N
+Ethos Space Resources|HRD|def|X
+SubVysion|PHY|build|N
+Avoca Systems|VRT|health|N
+Tracer|MOD|tech|N
+Wondering|CON|edu|N
+Vernius Systems, Inc.|DEF|def|X
+OneCLI|HOR|ent|N
+Nex|VRT|gtm|N
+Dawn Industries|VRT|mfg|N
+CueBench|DAT|tech|N
+Autoresearch, Inc.|SCI|tech|N
+Robocurve|DAT|tech|N
+Salem Robotics Inc|PHY|mfg|N
+Allia Health|SVC|health|N
+Osseus|DAT|health|N
+hardware intelligence|VRT|mfg|N
+Billow AI Labs|SVC|fin|N
+Atomarine|HRD|energy|S
+Magma|DAT|tech|N
+Caution|SEC|tech|E
+CoArena|DAT|tech|N
+Edviro|VRT|energy|N
+Experiential Labs|MOD|tech|N
+Conifer|TRU|tech|N
+OpenTag|HOR|ent|N
+Tire Swing|VRT|build|N
+Wingman Law|SVC|legal|N
+Databuddy|HOR|ent|N
+The Company Company|HOR|ent|N
+GodHands|HOR|ent|N
+Ryhla|VRT|energy|E
+ClaimKit|SVC|fin|N
+Degla Inc|PHY|def|N
+Reason Machines|HOR|ent|N
+Collar|SVC|fin|N
+Nxtcure Labs|SCI|health|E
+Rodeo Robotics|PHY|smb|N
+Fire Wallet|FIN|cons|X
+CONUS|VRT|health|N
+RightNow|MOD|tech|N
+Hickory & Company|VRT|fin|N
+Roma|CON|cons|N
+Lyon|MOD|fin|N
+Evident Machines|DAT|tech|N
+Confetti|VRT|mfg|N
+Alkera AI|HOR|ent|N
+Definite|VRT|fin|E
+Veltha|SVC|ins|N
+Audora|CON|cons|N
+Gradon|VRT|build|N
+Risklytics|SVC|ins|N
+Liquid Energy|MOD|energy|S
+Anywhere|CON|cons|E
+Limnion|INF|tech|N
+isoquant|MOD|tech|N
+HillStar|VRT|energy|N
+Grep AI|VRT|gtm|N
+UFO.ai|HOR|ent|N
+ernd|FIN|tech|S
+Neomatter|VRT|legal|N
+Simantic|DEV|tech|N
+Voyager|VRT|cons|N
+Runtime.si|PHY|tech|N
+Hue|TRU|tech|N
+herdr|INF|tech|N
+Theo|VRT|smb|N
+Bayworks|VRT|smb|N
+Sentient OS|CON|cons|N
+Simulithic|DEV|tech|N
+Adalat AI|VRT|legal|N
+ChemPilot.ai|SCI|def|N
+Veeza AI|CON|cons|N
+Petrichor|DAT|health|N
+Kailash Labs|MOD|tech|N
+Reific|DAT|tech|N
+Topos|SCI|tech|N
+Saccade|SCI|health|E
+Agent 37|INF|tech|N
+OpenScaffold|HOR|ent|N
+Faraday|VRT|mfg|N
+AnyAlpha|FIN|fin|N
+The Letter Company|DEV|tech|N
+Viraj Aero|HRD|energy|S
+Orgo|INF|tech|N
+Boat|INF|tech|N
+Applied Kinetics|PHY|energy|N
+Inflection Space Systems|HRD|def|X
+Capveon|OTH|energy|X
+Cardinal Square|SVC|edu|N
+Aviern|PHY|log|N
+Forward|FIN|fin|X
+Taan.ai|MOD|tech|N
+Stacktrace|TRU|tech|N
+Altair Health|VRT|health|E
+Armorer Labs|TRU|tech|N
+Rhem Labs|CON|health|E
+Talos|VRT|energy|N
+Nitroduck|SCI|energy|E
+Lantern AI|VRT|hr|N
+Munito AI|MOD|tech|N
+OpenLake Technologies|MOD|tech|N
+Micora|HRD|energy|X
+horizontal.|VRT|mfg|N
+Nodus Compute|MOD|tech|N
+Mirrors|TRU|tech|N
+OpenCrawl|INF|tech|N
+Asakana|VRT|log|N
+Perceptual Labs|MOD|tech|N
+River|HOR|ent|N
+Hopper|MOD|tech|N
+TrueMile|SVC|log|N
+ByteAsk|DEV|tech|N
+Antropi Robotics|PHY|mfg|N
+Agent Relay|DEV|tech|N
+Elimentary|VRT|fin|N
+Helios Intelligence|CON|health|E
+Invertix|VRT|energy|N
+Raven|CON|cons|N
+Open Actuation|HRD|mfg|X
+Dydema|CON|cons|E
+Plek|HOR|ent|N
+Workers IO|DEV|tech|N
+Oasive|VRT|fin|N
+Quivly AI|VRT|gtm|N
+Praxis|VRT|legal|N
+Shepherd Robotics|PHY|energy|N
+Deploy|PHY|tech|N
+Kairox Systems|PHY|def|N
+Caladh|DEF|def|E
+Streamline Systems|DEF|def|E
+Evardi|VRT|energy|N
+ORO AI|DAT|tech|N
+Hemlock|DAT|tech|N
+twentyfour26|HRD|mfg|X
+Orca Aerospace|VRT|def|N
+Fleety|VRT|smb|N
+0.security|SEC|tech|N
+Plover Labs|DEV|tech|N
+Ploid|INF|tech|N
+Primordiant|SCI|tech|N
+Obia|SVC|build|N
+Rystic|DAT|tech|N
+Vorelios|SCI|mfg|N
+Dreamscale Labs|MOD|tech|N
+Halmos Labs|SCI|health|N
+Resin Technologies|VRT|mfg|N
+Routant|INF|tech|N
+Telamont|VRT|build|N
+Ignition Benefits|SVC|hr|N
+Pomerado|INF|tech|N
+Archgen Labs|VRT|mfg|N
+Polemos Industries|DEF|def|N
+Organizely|VRT|mfg|N
+Covera|VRT|ins|N
+Hesper AI|VRT|ins|N
+EveryApp|OTH|tech|X
+Particularity|VRT|legal|E
+Reconero|VRT|legal|N
+Vexo|CON|cons|N
+Archangel Health|TRU|health|N
+Yam|CON|cons|N
+Ailit|HRD|log|X
+Native|VRT|gtm|N
+Shire Intelligence|PHY|smb|N
+Silica|HRD|mfg|X
+Latent|TRU|tech|N
+antimattr|CON|cons|N
+Synara|PHY|ent|N
+Vyra|CON|cons|N
+Odin Robotics|PHY|mfg|N
+Preload|DAT|tech|N
+Lux Foods|SCI|energy|X
+Graphide|DEV|tech|N
+Kanopy|PHY|energy|N
+Sutrix|VRT|health|N
+OpEra|VRT|mfg|N
+Papaya|TRU|tech|N
+Sinter|HRD|mfg|X
+Perit.AI|DAT|tech|N
+ObsessionDB|INF|tech|N
+Asim|PHY|tech|N
+UXDuck|DEF|def|E
+Sona8|HOR|ent|N
+Axonnic|PHY|tech|N
+Versine|INF|tech|N
+Melty|CON|cons|N
+RouterPlus|MOD|tech|N
+Quippy|CON|cons|N
+Composal|DEV|tech|N
+Epsilab|DAT|tech|N
+Verdun|SEC|tech|E
+Acyclic Labs|INF|tech|N
+Axiomat|MOD|tech|N
+Tilion|INF|tech|N
+Clean|VRT|gtm|N
+Blinka|FIN|fin|X
+Rezora IO|VRT|smb|N
+Volaren|CON|fin|N
+Spine|FIN|hr|E
+Terse|INF|tech|N
+The Subvocal Company|CON|cons|N
+Frontrunner|VRT|gtm|N
+Decent|FIN|ins|E
+Theseus Robotics|PHY|smb|N
+Ascenix|OTH|health|E
+GrayPass|SEC|tech|E
+Cyclon|CON|cons|N
+Ageospatial|VRT|ent|N
+HABU|VRT|build|N
+The Agentic Data Co.|DAT|tech|N
+Redoubt Insurance|SVC|ins|E
+Lark|VRT|log|N
+Superserve|INF|tech|N
+Canos|SCI|health|N
+Trepo|CON|cons|N
+Hundred|PHY|mfg|N
+STASIS|CON|health|E
+Tilo|INF|tech|N
+Kairos Health|VRT|health|N
+Kiwi|VRT|gtm|N
+OpenHack|SEC|tech|N
+Aucert|DEV|tech|N
+Sintropix|VRT|fin|N
+Phone Harness|INF|tech|N
+Adside.ai|SVC|gtm|N
+RATLOG|HRD|def|X
+Proto|DEV|tech|N
+Maritime|INF|tech|N
+Super Powers Mobility (SPM)|HRD|log|X
+DeepMark|TRU|tech|N
+Wondersearch|INF|tech|N
+Boxes.dev|DEV|tech|N
+Jinko|INF|tech|N
+Mantle|SVC|mfg|E
+Cesara|VRT|health|N
+Keres|DEF|def|X
+Aikido Technologies|HRD|energy|S
+Spacesheep|INF|tech|N
+ChampionEffect Inc.|VRT|hr|N
+Vouch|CON|fin|N
+Caveman|MOD|tech|N

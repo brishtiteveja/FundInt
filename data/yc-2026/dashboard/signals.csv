@@ -1,0 +1,17 @@
+signal,share_2025,share_2026
+Mentions AI / ML / LLM / agents,0.776,0.756
+Mentions agents / agentic,0.392,0.407
+Self-described 'AI-native',0.065,0.127
+AI employee / AI workforce framing,0.023,0.028
+AI-native firm (law/accounting/brokerage/agency),0.008,0.041
+RL environments / evals / benchmarks,0.045,0.058
+Training data for frontier labs / robotics,0.021,0.034
+Robots / humanoids / physical AI,0.048,0.108
+Defense / drones / counter-UAS,0.024,0.05
+Voice AI,0.042,0.022
+Computer-use / browser agents,0.015,0.012
+Inference / GPUs / data centers,0.037,0.084
+Coding agents / AI dev tools,0.04,0.065
+Healthcare,0.102,0.105
+Prediction markets,0.005,0.008
+Stablecoins / crypto,0.018,0.013

@@ -1,0 +1,897 @@
+{
+ "source": "https://github.com/yc-oss/api",
+ "source_last_updated": "2026-11-07T03:48:45.305Z",
+ "total": 832,
+ "batch_counts": {
+  "Winter 2026": 197,
+  "Spring 2026": 192,
+  "Summer 2026": 227,
+  "Fall 2026": 216
+ },
+ "batch_counts_2025": {
+  "Winter 2025": 166,
+  "Spring 2025": 144,
+  "Summer 2025": 165,
+  "Fall 2025": 145
+ },
+ "archetypes": {
+  "INF": "Agent & AI-app infrastructure",
+  "TRU": "Agent reliability, evals & AI security",
+  "DEV": "AI for software engineering",
+  "MOD": "Models, inference & compute",
+  "DAT": "Training data, RL environments & benchmarks",
+  "VRT": "Vertical & functional AI software",
+  "SVC": "AI-native services firm",
+  "HOR": "Horizontal enterprise AI",
+  "PHY": "Physical AI & robotics",
+  "DEF": "Defense & national security",
+  "SCI": "AI for science, bio & materials",
+  "HRD": "Hard tech (space, energy, manufacturing, semis)",
+  "CON": "Consumer apps & devices",
+  "FIN": "Fintech & markets",
+  "SEC": "Cybersecurity",
+  "OTH": "Other software"
+ },
+ "layers": {
+  "AI stack (selling to AI builders)": [
+   "MOD",
+   "DAT",
+   "INF",
+   "TRU",
+   "DEV"
+  ],
+  "AI applications (selling to businesses)": [
+   "VRT",
+   "HOR",
+   "SVC"
+  ],
+  "Atoms (physical world)": [
+   "PHY",
+   "DEF",
+   "HRD",
+   "SCI"
+  ],
+  "Other (consumer, fintech, security, misc.)": [
+   "CON",
+   "FIN",
+   "SEC",
+   "OTH"
+  ]
+ },
+ "sectors": {
+  "tech": "AI builders & software teams",
+  "ent": "Horizontal / any business",
+  "health": "Healthcare & life sciences",
+  "fin": "Financial services & accounting",
+  "ins": "Insurance",
+  "legal": "Legal, compliance & government",
+  "gtm": "Sales, marketing & customer experience",
+  "hr": "HR, recruiting & workforce",
+  "mfg": "Manufacturing, industrial & semis",
+  "log": "Logistics, supply chain & distribution",
+  "build": "Construction & real estate",
+  "energy": "Energy, climate, ag & data-center infra",
+  "def": "Defense, aerospace & space",
+  "smb": "Retail, hospitality & local services",
+  "cons": "Consumer, media & creators",
+  "edu": "Education"
+ },
+ "ai_depth_labels": {
+  "N": "AI-core",
+  "S": "AI supply chain (compute, chips, data-center power)",
+  "E": "AI-enabled",
+  "X": "Non-AI"
+ },
+ "archetype_counts": {
+  "VRT": 231,
+  "HRD": 35,
+  "OTH": 14,
+  "SVC": 57,
+  "HOR": 43,
+  "CON": 54,
+  "FIN": 32,
+  "TRU": 28,
+  "INF": 60,
+  "PHY": 62,
+  "SEC": 18,
+  "MOD": 54,
+  "DAT": 45,
+  "SCI": 37,
+  "DEV": 42,
+  "DEF": 20
+ },
+ "layer_counts": {
+  "AI applications (selling to businesses)": 331,
+  "Atoms (physical world)": 154,
+  "Other (consumer, fintech, security, misc.)": 118,
+  "AI stack (selling to AI builders)": 229
+ },
+ "sector_counts": {
+  "smb": 31,
+  "build": 24,
+  "def": 42,
+  "health": 72,
+  "gtm": 40,
+  "ent": 53,
+  "cons": 50,
+  "fin": 71,
+  "tech": 263,
+  "legal": 25,
+  "mfg": 58,
+  "log": 30,
+  "ins": 20,
+  "energy": 34,
+  "hr": 14,
+  "edu": 5
+ },
+ "ai_depth_counts": {
+  "N": 677,
+  "X": 61,
+  "E": 74,
+  "S": 20
+ },
+ "theme_counts": {
+  "ai_employee_framing": 43,
+  "ai_native_rebuild": 116,
+  "agents": 339,
+  "voice": 85,
+  "regulated_industries": 64,
+  "runs_end_to_end": 77,
+  "operating_system_framing": 40,
+  "drones_autonomy": 37,
+  "rl_simulation_world_models": 62,
+  "ai_compute_buildout": 93,
+  "x_for_y_analogy": 66,
+  "stablecoins_crypto": 11,
+  "context_memory": 75,
+  "humanoids_manipulation": 23,
+  "reindustrialization": 24,
+  "claude_code_openclaw_refs": 26,
+  "computer_use": 48,
+  "forward_deployed": 9,
+  "prediction_markets": 7
+ },
+ "by_batch_archetype": {
+  "Winter": {
+   "VRT": 65,
+   "HRD": 7,
+   "OTH": 7,
+   "SVC": 8,
+   "HOR": 9,
+   "CON": 13,
+   "FIN": 9,
+   "TRU": 10,
+   "INF": 9,
+   "PHY": 10,
+   "SEC": 5,
+   "MOD": 13,
+   "DAT": 10,
+   "SCI": 10,
+   "DEV": 10,
+   "DEF": 2
+  },
+  "Spring": {
+   "CON": 12,
+   "HOR": 15,
+   "INF": 14,
+   "MOD": 10,
+   "VRT": 60,
+   "SCI": 7,
+   "SVC": 14,
+   "PHY": 12,
+   "DEV": 10,
+   "DEF": 5,
+   "SEC": 4,
+   "HRD": 7,
+   "OTH": 3,
+   "FIN": 7,
+   "DAT": 7,
+   "TRU": 5
+  },
+  "Summer": {
+   "MOD": 16,
+   "HOR": 9,
+   "PHY": 23,
+   "SVC": 23,
+   "VRT": 56,
+   "INF": 16,
+   "DAT": 18,
+   "HRD": 10,
+   "CON": 8,
+   "FIN": 9,
+   "SCI": 10,
+   "DEV": 10,
+   "SEC": 5,
+   "DEF": 8,
+   "TRU": 5,
+   "OTH": 1
+  },
+  "Fall": {
+   "VRT": 50,
+   "SVC": 12,
+   "HOR": 10,
+   "PHY": 17,
+   "SCI": 10,
+   "FIN": 7,
+   "MOD": 15,
+   "CON": 21,
+   "DAT": 10,
+   "INF": 21,
+   "DEV": 12,
+   "TRU": 8,
+   "HRD": 11,
+   "OTH": 3,
+   "DEF": 5,
+   "SEC": 4
+  }
+ },
+ "by_batch_ai_depth": {
+  "Winter": {
+   "N": 160,
+   "X": 18,
+   "E": 17,
+   "S": 2
+  },
+  "Spring": {
+   "N": 161,
+   "E": 16,
+   "X": 12,
+   "S": 3
+  },
+  "Summer": {
+   "S": 11,
+   "N": 182,
+   "E": 19,
+   "X": 15
+  },
+  "Fall": {
+   "N": 174,
+   "E": 22,
+   "X": 16,
+   "S": 4
+  }
+ },
+ "sector_archetype_matrix": [
+  {
+   "sector": "smb",
+   "archetype": "VRT",
+   "n": 23
+  },
+  {
+   "sector": "build",
+   "archetype": "VRT",
+   "n": 18
+  },
+  {
+   "sector": "def",
+   "archetype": "HRD",
+   "n": 11
+  },
+  {
+   "sector": "smb",
+   "archetype": "OTH",
+   "n": 2
+  },
+  {
+   "sector": "health",
+   "archetype": "SVC",
+   "n": 8
+  },
+  {
+   "sector": "gtm",
+   "archetype": "VRT",
+   "n": 36
+  },
+  {
+   "sector": "ent",
+   "archetype": "HOR",
+   "n": 41
+  },
+  {
+   "sector": "cons",
+   "archetype": "CON",
+   "n": 37
+  },
+  {
+   "sector": "fin",
+   "archetype": "FIN",
+   "n": 17
+  },
+  {
+   "sector": "tech",
+   "archetype": "OTH",
+   "n": 3
+  },
+  {
+   "sector": "ent",
+   "archetype": "OTH",
+   "n": 3
+  },
+  {
+   "sector": "tech",
+   "archetype": "TRU",
+   "n": 26
+  },
+  {
+   "sector": "tech",
+   "archetype": "INF",
+   "n": 58
+  },
+  {
+   "sector": "fin",
+   "archetype": "VRT",
+   "n": 33
+  },
+  {
+   "sector": "def",
+   "archetype": "PHY",
+   "n": 4
+  },
+  {
+   "sector": "legal",
+   "archetype": "SVC",
+   "n": 7
+  },
+  {
+   "sector": "tech",
+   "archetype": "SEC",
+   "n": 17
+  },
+  {
+   "sector": "tech",
+   "archetype": "MOD",
+   "n": 49
+  },
+  {
+   "sector": "mfg",
+   "archetype": "VRT",
+   "n": 26
+  },
+  {
+   "sector": "health",
+   "archetype": "VRT",
+   "n": 28
+  },
+  {
+   "sector": "log",
+   "archetype": "VRT",
+   "n": 12
+  },
+  {
+   "sector": "ent",
+   "archetype": "VRT",
+   "n": 2
+  },
+  {
+   "sector": "tech",
+   "archetype": "DAT",
+   "n": 42
+  },
+  {
+   "sector": "ins",
+   "archetype": "VRT",
+   "n": 8
+  },
+  {
+   "sector": "mfg",
+   "archetype": "HRD",
+   "n": 10
+  },
+  {
+   "sector": "health",
+   "archetype": "SCI",
+   "n": 18
+  },
+  {
+   "sector": "legal",
+   "archetype": "VRT",
+   "n": 18
+  },
+  {
+   "sector": "ins",
+   "archetype": "SVC",
+   "n": 8
+  },
+  {
+   "sector": "tech",
+   "archetype": "DEV",
+   "n": 41
+  },
+  {
+   "sector": "ent",
+   "archetype": "PHY",
+   "n": 3
+  },
+  {
+   "sector": "cons",
+   "archetype": "OTH",
+   "n": 1
+  },
+  {
+   "sector": "tech",
+   "archetype": "FIN",
+   "n": 5
+  },
+  {
+   "sector": "log",
+   "archetype": "PHY",
+   "n": 9
+  },
+  {
+   "sector": "tech",
+   "archetype": "SCI",
+   "n": 10
+  },
+  {
+   "sector": "energy",
+   "archetype": "PHY",
+   "n": 9
+  },
+  {
+   "sector": "def",
+   "archetype": "DEF",
+   "n": 20
+  },
+  {
+   "sector": "hr",
+   "archetype": "VRT",
+   "n": 9
+  },
+  {
+   "sector": "energy",
+   "archetype": "SCI",
+   "n": 4
+  },
+  {
+   "sector": "health",
+   "archetype": "CON",
+   "n": 9
+  },
+  {
+   "sector": "def",
+   "archetype": "MOD",
+   "n": 2
+  },
+  {
+   "sector": "def",
+   "archetype": "VRT",
+   "n": 4
+  },
+  {
+   "sector": "gtm",
+   "archetype": "OTH",
+   "n": 2
+  },
+  {
+   "sector": "energy",
+   "archetype": "HRD",
+   "n": 10
+  },
+  {
+   "sector": "edu",
+   "archetype": "CON",
+   "n": 2
+  },
+  {
+   "sector": "fin",
+   "archetype": "SVC",
+   "n": 13
+  },
+  {
+   "sector": "energy",
+   "archetype": "VRT",
+   "n": 7
+  },
+  {
+   "sector": "hr",
+   "archetype": "FIN",
+   "n": 2
+  },
+  {
+   "sector": "edu",
+   "archetype": "VRT",
+   "n": 2
+  },
+  {
+   "sector": "mfg",
+   "archetype": "PHY",
+   "n": 16
+  },
+  {
+   "sector": "cons",
+   "archetype": "HRD",
+   "n": 1
+  },
+  {
+   "sector": "energy",
+   "archetype": "OTH",
+   "n": 2
+  },
+  {
+   "sector": "cons",
+   "archetype": "VRT",
+   "n": 5
+  },
+  {
+   "sector": "hr",
+   "archetype": "SVC",
+   "n": 2
+  },
+  {
+   "sector": "build",
+   "archetype": "CON",
+   "n": 1
+  },
+  {
+   "sector": "mfg",
+   "archetype": "SCI",
+   "n": 4
+  },
+  {
+   "sector": "gtm",
+   "archetype": "SVC",
+   "n": 2
+  },
+  {
+   "sector": "health",
+   "archetype": "HRD",
+   "n": 1
+  },
+  {
+   "sector": "smb",
+   "archetype": "HOR",
+   "n": 2
+  },
+  {
+   "sector": "ent",
+   "archetype": "SVC",
+   "n": 4
+  },
+  {
+   "sector": "log",
+   "archetype": "SVC",
+   "n": 6
+  },
+  {
+   "sector": "tech",
+   "archetype": "PHY",
+   "n": 12
+  },
+  {
+   "sector": "health",
+   "archetype": "DAT",
+   "n": 3
+  },
+  {
+   "sector": "mfg",
+   "archetype": "SVC",
+   "n": 2
+  },
+  {
+   "sector": "fin",
+   "archetype": "CON",
+   "n": 4
+  },
+  {
+   "sector": "health",
+   "archetype": "TRU",
+   "n": 2
+  },
+  {
+   "sector": "ins",
+   "archetype": "INF",
+   "n": 1
+  },
+  {
+   "sector": "build",
+   "archetype": "PHY",
+   "n": 3
+  },
+  {
+   "sector": "build",
+   "archetype": "SVC",
+   "n": 2
+  },
+  {
+   "sector": "hr",
+   "archetype": "CON",
+   "n": 1
+  },
+  {
+   "sector": "cons",
+   "archetype": "FIN",
+   "n": 4
+  },
+  {
+   "sector": "cons",
+   "archetype": "PHY",
+   "n": 2
+  },
+  {
+   "sector": "log",
+   "archetype": "FIN",
+   "n": 1
+  },
+  {
+   "sector": "health",
+   "archetype": "DEV",
+   "n": 1
+  },
+  {
+   "sector": "fin",
+   "archetype": "MOD",
+   "n": 2
+  },
+  {
+   "sector": "health",
+   "archetype": "PHY",
+   "n": 1
+  },
+  {
+   "sector": "ins",
+   "archetype": "FIN",
+   "n": 3
+  },
+  {
+   "sector": "fin",
+   "archetype": "INF",
+   "n": 1
+  },
+  {
+   "sector": "energy",
+   "archetype": "SVC",
+   "n": 1
+  },
+  {
+   "sector": "smb",
+   "archetype": "SVC",
+   "n": 1
+  },
+  {
+   "sector": "fin",
+   "archetype": "SEC",
+   "n": 1
+  },
+  {
+   "sector": "smb",
+   "archetype": "PHY",
+   "n": 3
+  },
+  {
+   "sector": "energy",
+   "archetype": "MOD",
+   "n": 1
+  },
+  {
+   "sector": "def",
+   "archetype": "SCI",
+   "n": 1
+  },
+  {
+   "sector": "edu",
+   "archetype": "SVC",
+   "n": 1
+  },
+  {
+   "sector": "log",
+   "archetype": "HRD",
+   "n": 2
+  },
+  {
+   "sector": "health",
+   "archetype": "OTH",
+   "n": 1
+  }
+ ],
+ "signals_2025": {
+  "Mentions AI / ML / LLM / agents": 77.6,
+  "Mentions agents / agentic": 39.2,
+  "Self-described 'AI-native'": 6.5,
+  "AI employee / AI workforce framing": 2.3,
+  "AI-native firm (law/accounting/brokerage/agency)": 0.8,
+  "RL environments / evals / benchmarks": 4.5,
+  "Training data for frontier labs / robotics": 2.1,
+  "Robots / humanoids / physical AI": 4.8,
+  "Defense / drones / counter-UAS": 2.4,
+  "Voice AI": 4.2,
+  "Computer-use / browser agents": 1.5,
+  "Inference / GPUs / data centers": 3.7,
+  "Coding agents / AI dev tools": 4.0,
+  "Healthcare": 10.2,
+  "Prediction markets": 0.5,
+  "Stablecoins / crypto": 1.8
+ },
+ "signals_2026": {
+  "Mentions AI / ML / LLM / agents": 75.6,
+  "Mentions agents / agentic": 40.7,
+  "Self-described 'AI-native'": 12.7,
+  "AI employee / AI workforce framing": 2.8,
+  "AI-native firm (law/accounting/brokerage/agency)": 4.1,
+  "RL environments / evals / benchmarks": 5.8,
+  "Training data for frontier labs / robotics": 3.4,
+  "Robots / humanoids / physical AI": 10.8,
+  "Defense / drones / counter-UAS": 5.0,
+  "Voice AI": 2.2,
+  "Computer-use / browser agents": 1.2,
+  "Inference / GPUs / data centers": 8.4,
+  "Coding agents / AI dev tools": 6.5,
+  "Healthcare": 10.5,
+  "Prediction markets": 0.8,
+  "Stablecoins / crypto": 1.3
+ },
+ "signals_by_batch": {
+  "W25": {
+   "Mentions AI / ML / LLM / agents": 71.7,
+   "Mentions agents / agentic": 33.7,
+   "Self-described 'AI-native'": 4.2,
+   "AI employee / AI workforce framing": 1.8,
+   "AI-native firm (law/accounting/brokerage/agency)": 0.0,
+   "RL environments / evals / benchmarks": 3.0,
+   "Training data for frontier labs / robotics": 1.8,
+   "Robots / humanoids / physical AI": 3.6,
+   "Defense / drones / counter-UAS": 3.0,
+   "Voice AI": 4.8,
+   "Computer-use / browser agents": 0.6,
+   "Inference / GPUs / data centers": 2.4,
+   "Coding agents / AI dev tools": 2.4,
+   "Healthcare": 10.8,
+   "Prediction markets": 0.0,
+   "Stablecoins / crypto": 2.4
+  },
+  "X25": {
+   "Mentions AI / ML / LLM / agents": 75.7,
+   "Mentions agents / agentic": 38.2,
+   "Self-described 'AI-native'": 5.6,
+   "AI employee / AI workforce framing": 1.4,
+   "AI-native firm (law/accounting/brokerage/agency)": 0.0,
+   "RL environments / evals / benchmarks": 4.2,
+   "Training data for frontier labs / robotics": 2.8,
+   "Robots / humanoids / physical AI": 4.9,
+   "Defense / drones / counter-UAS": 0.7,
+   "Voice AI": 2.1,
+   "Computer-use / browser agents": 2.1,
+   "Inference / GPUs / data centers": 6.2,
+   "Coding agents / AI dev tools": 4.9,
+   "Healthcare": 10.4,
+   "Prediction markets": 0.0,
+   "Stablecoins / crypto": 2.1
+  },
+  "S25": {
+   "Mentions AI / ML / LLM / agents": 83.0,
+   "Mentions agents / agentic": 43.6,
+   "Self-described 'AI-native'": 7.3,
+   "AI employee / AI workforce framing": 3.0,
+   "AI-native firm (law/accounting/brokerage/agency)": 1.2,
+   "RL environments / evals / benchmarks": 4.8,
+   "Training data for frontier labs / robotics": 1.8,
+   "Robots / humanoids / physical AI": 6.1,
+   "Defense / drones / counter-UAS": 1.8,
+   "Voice AI": 6.7,
+   "Computer-use / browser agents": 3.0,
+   "Inference / GPUs / data centers": 4.2,
+   "Coding agents / AI dev tools": 4.8,
+   "Healthcare": 9.1,
+   "Prediction markets": 0.0,
+   "Stablecoins / crypto": 0.6
+  },
+  "F25": {
+   "Mentions AI / ML / LLM / agents": 80.0,
+   "Mentions agents / agentic": 41.4,
+   "Self-described 'AI-native'": 9.0,
+   "AI employee / AI workforce framing": 2.8,
+   "AI-native firm (law/accounting/brokerage/agency)": 2.1,
+   "RL environments / evals / benchmarks": 6.2,
+   "Training data for frontier labs / robotics": 2.1,
+   "Robots / humanoids / physical AI": 4.8,
+   "Defense / drones / counter-UAS": 4.1,
+   "Voice AI": 2.8,
+   "Computer-use / browser agents": 0.0,
+   "Inference / GPUs / data centers": 2.1,
+   "Coding agents / AI dev tools": 4.1,
+   "Healthcare": 10.3,
+   "Prediction markets": 2.1,
+   "Stablecoins / crypto": 2.1
+  },
+  "W26": {
+   "Mentions AI / ML / LLM / agents": 77.2,
+   "Mentions agents / agentic": 37.6,
+   "Self-described 'AI-native'": 11.2,
+   "AI employee / AI workforce framing": 3.6,
+   "AI-native firm (law/accounting/brokerage/agency)": 4.1,
+   "RL environments / evals / benchmarks": 6.1,
+   "Training data for frontier labs / robotics": 1.5,
+   "Robots / humanoids / physical AI": 9.6,
+   "Defense / drones / counter-UAS": 5.1,
+   "Voice AI": 2.5,
+   "Computer-use / browser agents": 1.0,
+   "Inference / GPUs / data centers": 5.1,
+   "Coding agents / AI dev tools": 6.1,
+   "Healthcare": 12.2,
+   "Prediction markets": 1.0,
+   "Stablecoins / crypto": 3.0
+  },
+  "X26": {
+   "Mentions AI / ML / LLM / agents": 80.2,
+   "Mentions agents / agentic": 47.4,
+   "Self-described 'AI-native'": 13.0,
+   "AI employee / AI workforce framing": 3.6,
+   "AI-native firm (law/accounting/brokerage/agency)": 2.6,
+   "RL environments / evals / benchmarks": 5.2,
+   "Training data for frontier labs / robotics": 3.1,
+   "Robots / humanoids / physical AI": 8.3,
+   "Defense / drones / counter-UAS": 4.2,
+   "Voice AI": 1.6,
+   "Computer-use / browser agents": 0.5,
+   "Inference / GPUs / data centers": 4.2,
+   "Coding agents / AI dev tools": 8.3,
+   "Healthcare": 12.0,
+   "Prediction markets": 2.1,
+   "Stablecoins / crypto": 0.5
+  },
+  "S26": {
+   "Mentions AI / ML / LLM / agents": 73.6,
+   "Mentions agents / agentic": 33.5,
+   "Self-described 'AI-native'": 15.9,
+   "AI employee / AI workforce framing": 3.1,
+   "AI-native firm (law/accounting/brokerage/agency)": 6.2,
+   "RL environments / evals / benchmarks": 6.2,
+   "Training data for frontier labs / robotics": 4.8,
+   "Robots / humanoids / physical AI": 15.4,
+   "Defense / drones / counter-UAS": 4.8,
+   "Voice AI": 2.6,
+   "Computer-use / browser agents": 1.3,
+   "Inference / GPUs / data centers": 12.8,
+   "Coding agents / AI dev tools": 4.8,
+   "Healthcare": 10.1,
+   "Prediction markets": 0.0,
+   "Stablecoins / crypto": 1.3
+  },
+  "F26": {
+   "Mentions AI / ML / LLM / agents": 72.2,
+   "Mentions agents / agentic": 45.4,
+   "Self-described 'AI-native'": 10.6,
+   "AI employee / AI workforce framing": 0.9,
+   "AI-native firm (law/accounting/brokerage/agency)": 3.2,
+   "RL environments / evals / benchmarks": 5.6,
+   "Training data for frontier labs / robotics": 3.7,
+   "Robots / humanoids / physical AI": 9.3,
+   "Defense / drones / counter-UAS": 6.0,
+   "Voice AI": 1.9,
+   "Computer-use / browser agents": 1.9,
+   "Inference / GPUs / data centers": 10.6,
+   "Coding agents / AI dev tools": 6.9,
+   "Healthcare": 7.9,
+   "Prediction markets": 0.5,
+   "Stablecoins / crypto": 0.5
+  }
+ },
+ "yc_industry": {
+  "2025": {
+   "Healthcare": 44,
+   "B2B": 404,
+   "Education": 11,
+   "Industrials": 64,
+   "Real Estate and Construction": 12,
+   "Government": 9,
+   "Fintech": 35,
+   "Consumer": 41
+  },
+  "2026": {
+   "B2B": 462,
+   "Real Estate and Construction": 16,
+   "Industrials": 162,
+   "Healthcare": 67,
+   "Fintech": 71,
+   "Consumer": 46,
+   "Government": 6,
+   "Education": 2
+  }
+ },
+ "regions": {
+  "Europe": 61,
+  "US/Canada": 727,
+  "Other/unspecified": 33,
+  "Asia": 11
+ },
+ "median_team_size": 3
+}
